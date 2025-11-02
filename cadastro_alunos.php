@@ -1,0 +1,119 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "shaolin";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
+
+$sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome AS 'Modalidade'
+        FROM usuarios
+        INNER JOIN modA ON usuarios.id = modA.id_aluno
+        INNER JOIN modalidades ON modA.id_mod = modalidades.id
+        WHERE usuarios.tipo = 'A'
+        UNION
+        SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome AS 'Modalidade'
+        FROM usuarios
+        INNER JOIN modB ON usuarios.id = modB.id_aluno
+        INNER JOIN modalidades ON modB.id_mod = modalidades.id
+        WHERE usuarios.tipo = 'A'
+        ORDER BY Aluno, Modalidade;"; 
+    $result = $conn->query($sql);
+
+?>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="img/icon.png" type="image/x-icon">
+    <title>Shaolin Piracicaba | Cadastro de alunos</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg p-0">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between">
+                    <a class="navbar-brand" href="index.html">
+                        <img class="m-2" id="logo_cabecalho" src="img/logo.svg" alt="Logotipo">
+                    </a>
+                    <div class="flex-column">
+                        <a href="index.html">
+                            <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="modalidades.html">Modalidades</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="sobre.html">Sobre</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="premiacoes.html">Premiações</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page"  href="login.php">Área do Aluno/Professor</a>
+                                </li>
+                                <div id="user" class="d-flex align-items-center">
+                                    <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
+                                    <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="d-flex flex-column align-items-center">
+        <h2 class="text-uppercase mt-4 mb-3 text-center"><b>Alunos</b></h2>  
+        <table class="table table-striped w-75">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Nome</th>
+              <th scope="col">Modalidade</th>
+            </tr>
+          </thead>
+          <tbody>
+              <?php
+                if ($result->num_rows > 0) {
+                    while($row = $result->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<th scope='row'>" . $row["id"] . "</th>";
+                        echo "<td>" . htmlspecialchars($row["Aluno"]) . "</td>";
+                        echo "<td>" . htmlspecialchars($row["Modalidade"]) . "</td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='2'>0 resultados</td></tr>";
+                }
+                $conn->close();
+                ?>
+          </tbody>
+        </table>
+        <div class="d-flex w-75 mt-2">
+        	<a class="btn text-uppercase w-50 ms-0 btn_verde" href="#">Incluir</a>
+            <a class="btn text-uppercase w-50 me-0 voltar" href="area_professor.php">Voltar</a>
+        </div>
+    </main>
+    </main>
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
