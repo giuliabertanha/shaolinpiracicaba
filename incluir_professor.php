@@ -10,8 +10,25 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-$sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Professor', modalidades.nome AS 'Modalidade' FROM modalidades INNER JOIN usuarios ON usuarios.id = modalidades.id_professor1 WHERE usuarios.tipo = 'P';"; 
-    $result = $conn->query($sql);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $usuario = $_POST['usuario'];
+        $senha = $_POST['senha'];
+        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+        $nome = $_POST['nome'];
+        $telefone = $_POST['telefone'];
+        $email = $_POST['email'];
+        $admin = isset($_POST['admin']) ? 1 : 0;
+
+        $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'P', '$admin')";
+
+        if ($conn->query($query_insert) === TRUE) {
+            // Dados salvos com sucesso
+            echo "<script>alert('Dados salvos com sucesso!');</script>";
+        } else {
+            // Erro ao salvar os dados
+            echo "<script>alert('Erro ao inserir dados: " . $conn->error . "');</script>";
+        }
+    }
 
 ?>
 
@@ -83,7 +100,7 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Professor', modalidades.no
             </div>
             <div class="mb-3">
                 <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" name="senha" id="senha" required>
+                <input type="password" class="form-control" name="senha" id="senha" minlength="6" maxlenght="30" required>
             </div>
             <div class="mb-3">
                 <label for="telefone" class="form-label">Telefone</label>
