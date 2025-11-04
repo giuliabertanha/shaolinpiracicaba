@@ -10,81 +10,93 @@
         <script src="moda.js" defer></script>
         <title>Shaolin Piracicaba | Modalidades</title>
     </head>
-        <body>
-            <header>
-                <nav class="navbar navbar-expand-lg p-0">
-                    <div class="container-fluid">
-                        <div class="d-flex justify-content-between">
-                            <a class="navbar-brand" href="index.html">
-                                <img class="m-2" id="logo_cabecalho" src="logo.svg" alt="Logotipo">
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-lg p-0">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between">
+                        <a class="navbar-brand" href="index.html">
+                            <img class="m-2" id="logo_cabecalho" src="./img/logo.svg" alt="Logotipo">
+                        </a>
+                        <div class="flex-column">
+                            <a href="index.html">
+                                <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
                             </a>
-                            <div class="flex-column">
-                                <a href="index.html">
-                                    <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
-                                </a>
-                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                                </button>
-                                <div class="collapse navbar-collapse" id="navbarNav">
-                                    <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
-                                    <ul class="navbar-nav">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="modalidades.html">Modalidades</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="sobre.html">Sobre</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="premiacoes.html">Premiações</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="login.php"><b>Área do Aluno/Professor</b></a>
-                                        </li>
-                                        <div id="user" class="d-flex align-items-center">
-                                            <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
-                                            <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
-                                        </div>
-                                    </ul>
-                                </div>
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarNav">
+                                <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
+                                <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="modalidades.html">Modalidades</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="sobre.html">Sobre</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="premiacoes.html">Premiações</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="login.php"><b>Área do Aluno/Professor</b></a>
+                                    </li>
+                                    <div id="user" class="d-flex align-items-center">
+                                        <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
+                                        <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
+                                    </div>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                </nav>
-            </header>
-            <main>
-                <div class="modalidade">
-                    <h2>Shaolin do Norte</h2>
-                    <div class="content">
-                        <div class="caroussel">
-                            <img src="WhatsApp Image 2025-10-29 at 12.56.03.jpeg" alt="kati">
-                            <img src="images.png" alt="armas">
+                </div>
+            </nav>
+        </header>
+
+        <main class="container-modalidades">
+            <div class="modalidade">
+                <h2>Shaolin do Norte</h2>
+                <div class="content">
+                    <div class="carousel-wrapper">
+                        <button class="prev" data-carousel="0">‹</button>
+                        <div class="caroussel" data-carousel="0">
+                            <img src="./img/shaolin_1.jpeg" alt="Shaolin do Norte" class="active">
+                            <img src="images.png" alt="Shaolin do Norte">
+                            <img src="images.png" alt="Shaolin do Norte">
                         </div>
-                        <div>
-                            <p>O Shaolin do Norte é um tradicional estilo de Kung Fu originado dos mosteiros 
-                                Shaolin situados no norte da China. Caracteriza-se por movimentos amplos, 
-                                rápidos e poderosos, que enfatizam a força das pernas, a agilidade e a técnica de 
-                                chutes, buscando a fluidez e a elegância dos movimentos, combinando 
-                                defesa e ataque em harmonia. Além da parte física, o estilo também valoriza 
-                                a disciplina mental, a meditação e os princípios filosóficos budistas, formando 
-                                não apenas guerreiros, mas praticantes com corpo e mente equilibrados.
-                            </p>
-                            <center>
-                                <a href="#" class="btn" >Saiba Mais</a>
-                            </center>
-                        </div>
+                        <button class="next" data-carousel="0">›</button>
+                    </div>
+                    <div>
+                        <p>O Shaolin do Norte é um tradicional estilo de Kung Fu originado dos mosteiros 
+                            Shaolin situados no norte da China. Caracteriza-se por movimentos amplos, 
+                            rápidos e poderosos, que enfatizam a força das pernas, a agilidade e a técnica de 
+                            chutes, buscando a fluidez e a elegância dos movimentos, combinando 
+                            defesa e ataque em harmonia. Além da parte física, o estilo também valoriza 
+                            a disciplina mental, a meditação e os princípios filosóficos budistas, formando 
+                            não apenas guerreiros, mas praticantes com corpo e mente equilibrados.
+                        </p>
+                        <center>
+                            <a href="#" class="btn">Saiba Mais</a>
+                        </center>
                     </div>
                 </div>
-                <br>
-                <div class="modalidade">
-                    <h2>Shaolin do Norte Kids</h2>
-                    <div class="content">
-                        <div class="caroussel">
-                            <img src="animais terra/elefante.jpg" alt="teste">
-                            <img src="animais terra/curiosidades-sobre-leao.jpg" alt="teste">
+            </div>
+            <br>
+            <div class="modalidade">
+                <h2>Shaolin do Norte Kids</h2>
+                <div class="content">
+                    <div class="carousel-wrapper">
+                        <button class="prev" data-carousel="1">‹</button>
+                        <div class="caroussel" data-carousel="1">
+                            <img src="images.png" alt="Shaolin Kids" class="active">
+                            <img src="images.png" alt="Shaolin Kids">
+                            <img src="images.png" alt="Shaolin Kids">
                         </div>
+                        <button class="next" data-carousel="1">›</button>
+                    </div>
+                    <div>
                         <p>O Shaolin do Norte é um estilo de Kung Fu que vem dos antigos monges 
                             Shaolin da China. Ele é conhecido por ter movimentos grandes, 
                             rápidos e cheios de energia! Nesse estilo, usamos muito as pernas 
@@ -95,18 +107,25 @@
                             divertida e saudável de crescer forte, focado e com o coração tranquilo!
                         </p>
                         <center>
-                            <a href="#" class="btn" >Saiba Mais</a>
+                            <a href="#" class="btn">Saiba Mais</a>
                         </center>
                     </div>
                 </div>
-                <br>
-                <div class="modalidade">
-                    <h2>Sanda</h2>
-                    <div class="content">
-                        <div class="caroussel">
-                            <img src="animais terra/elefante.jpg" alt="teste">
-                            <img src="animais terra/curiosidades-sobre-leao.jpg" alt="teste">
+            </div>
+            <br>
+            <div class="modalidade">
+                <h2>Sanda</h2>
+                <div class="content">
+                    <div class="carousel-wrapper">
+                        <button class="prev" data-carousel="2">‹</button>
+                        <div class="caroussel" data-carousel="2">
+                            <img src="images.png" alt="Sanda" class="active">
+                            <img src="images.png" alt="Sanda">
+                            <img src="images.png" alt="Sanda">
                         </div>
+                        <button class="next" data-carousel="2">›</button>
+                    </div>
+                    <div>
                         <p>O Sanda, também chamado de Boxe Chinês, é a forma de combate moderna 
                             do Kung Fu, desenvolvida a partir das antigas técnicas de defesa e ataque 
                             usadas pelos monges e guerreiros chineses. Ele combina socos, chutes, 
@@ -117,18 +136,25 @@
                             disciplina e o autoconhecimento, pilares essenciais do verdadeiro espírito marcial.
                         </p>
                         <center>
-                            <a href="#" class="btn" >Saiba Mais</a>
+                            <a href="#" class="btn">Saiba Mais</a>
                         </center>
                     </div>
                 </div>
-                <br>
-                <div class="modalidade">
-                    <h2>Shuaijiao</h2>
-                    <div class="content">
-                        <div class="caroussel">
-                            <img src="animais terra/elefante.jpg" alt="teste">
-                            <img src="animais terra/curiosidades-sobre-leao.jpg" alt="teste">
+            </div>
+            <br>
+            <div class="modalidade">
+                <h2>Shuaijiao</h2>
+                <div class="content">
+                    <div class="carousel-wrapper">
+                        <button class="prev" data-carousel="3">‹</button>
+                        <div class="caroussel" data-carousel="3">
+                            <img src="images.png" alt="Shuaijiao" class="active">
+                            <img src="images.png" alt="Shuaijiao">
+                            <img src="images.png" alt="Shuaijiao">
                         </div>
+                        <button class="next" data-carousel="3">›</button>
+                    </div>
+                    <div>
                         <p>O Shuai Jiao é uma das mais antigas artes marciais da China e é 
                             conhecido como o estilo de projeções e quedas do Kung Fu. Seu foco 
                             principal está em derrubar o oponente com técnica, equilíbrio e controle, 
@@ -139,18 +165,25 @@
                              — valores essenciais dentro do verdadeiro caminho marcial.
                         </p>
                         <center>
-                            <a href="#" class="btn" >Saiba Mais</a>
+                            <a href="#" class="btn">Saiba Mais</a>
                         </center>
                     </div>
                 </div>
-                <br>
-                <div class="modalidade">
-                    <h2>Tai Chi Chuan</h2>
-                    <div class="content">
-                        <div class="caroussel">
-                            <img src="animais terra/elefante.jpg" alt="teste">
-                            <img src="animais terra/curiosidades-sobre-leao.jpg" alt="teste">
+            </div>
+            <br>
+            <div class="modalidade">
+                <h2>Tai Chi Chuan</h2>
+                <div class="content">
+                    <div class="carousel-wrapper">
+                        <button class="prev" data-carousel="4">‹</button>
+                        <div class="caroussel" data-carousel="4">
+                            <img src="images.png" alt="Tai Chi" class="active">
+                            <img src="images.png" alt="Tai Chi">
+                            <img src="images.png" alt="Tai Chi">
                         </div>
+                        <button class="next" data-carousel="4">›</button>
+                    </div>
+                    <div>
                         <p>O Tai Chi Chuan é um estilo tradicional do Kung Fu interno, conhecido 
                             por seus movimentos lentos, suaves e contínuos. Ele combina arte marcial, 
                             meditação e exercícios de respiração, buscando o equilíbrio entre corpo e mente.
@@ -161,19 +194,20 @@
                             dentro e fora do tatame.
                         </p>
                         <center>
-                            <a href="#" class="btn" >Saiba Mais</a>
+                            <a href="#" class="btn">Saiba Mais</a>
                         </center>
                     </div>
                 </div>
-            </main>
-            <footer class="d-flex justify-content-between align-items-center p-4">
-                <span>&copy; 2025 Shaolin Kung Fu Piraciaba - Todos os direitos reservados.</span>
-                <div class="redes-sociais">
-                    <i class="fa-brands fa-whatsapp fa-xl m-1" style="color: #161616;"></i>
-                    <i class="fa-brands fa-facebook fa-xl m-1" style="color: #161616;"></i>
-                    <i class="fa-brands fa-instagram fa-xl m-1" style="color: #161616;"></i>
-                </div>
-            </footer>
-            <script src="js/bootstrap.bundle.min.js"></script>
+            </div>
+        </main>
+
+        <footer class="d-flex justify-content-between align-items-center p-4">
+            <span>&copy; 2025 Shaolin Kung Fu Piraciaba - Todos os direitos reservados.</span>
+            <div class="redes-sociais">
+                <i class="fa-brands fa-whatsapp fa-xl m-1" style="color: #161616;"></i>
+                <i class="fa-brands fa-facebook fa-xl m-1" style="color: #161616;"></i>
+                <i class="fa-brands fa-instagram fa-xl m-1" style="color: #161616;"></i>
+            </div>
+        </footer>
     </body>
 </html>
