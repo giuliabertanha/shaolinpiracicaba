@@ -7,6 +7,7 @@
   --gray: #e6ecf3;
   --black: #161616;
   --green: #bbcc87;
+  --red: #E07D7D;
 }
 
 * {
@@ -110,8 +111,22 @@ footer {
 }
 
 /*BOTÕES*/
-.btn {
+.btn_verde{
   background-color: var(--green) !important;
+  font-weight: 500 !important;
+  margin: 1rem;
+  padding: 0.5rem 1rem !important;
+}
+
+.voltar {
+  background-color: var(--gray) !important;
+  font-weight: 500 !important;
+  margin: 1rem;
+  padding: 0.5rem 1rem !important;
+}
+
+.excluir {
+  background-color: var(--red) !important;
   font-weight: 500 !important;
   margin: 1rem;
   padding: 0.5rem 1rem !important;
@@ -149,9 +164,14 @@ thead {
 
 /*MAIN - MODALIDADE*/
 .container-modalidades {
-  padding: 2% 8%;
+  padding: 0% 8%;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+/*CENTRALIZAR - TITULO*/
+.centro {
+  text-align: center;
 }
 
 /*MODALIDADES*/
