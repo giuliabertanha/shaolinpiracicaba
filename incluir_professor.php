@@ -19,14 +19,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $admin = isset($_POST['admin']) ? 1 : 0;
 
-        $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'P', '$admin')";
+        $query_consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
+        $result = $conn->query($query_consulta);
 
-        if ($conn->query($query_insert) === TRUE) {
-            // Dados salvos com sucesso
-            echo "<script>alert('Dados salvos com sucesso!');</script>";
+        if ($result->num_rows > 0) {
+            echo "<script>alert('Este nome de usuário já está em uso. Tente outro.');</script>";
+            exit();
         } else {
-            // Erro ao salvar os dados
-            echo "<script>alert('Erro ao inserir dados: " . $conn->error . "');</script>";
+            $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'P', '$admin')";
+
+            if ($conn->query($query_insert) === TRUE) {
+                // Dados salvos com sucesso
+                echo "<script>alert('Dados salvos com sucesso!');</script>";
+            } else {
+                // Erro ao salvar os dados
+                echo "<script>alert('Erro ao inserir dados: " . $conn->error . "');</script>";
+            }
         }
     }
 
@@ -119,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
-                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button> <!--Exibir mensagem de salvo - JS-->
+                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
                 <a href="area_professor.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
             </div>
         </form>
