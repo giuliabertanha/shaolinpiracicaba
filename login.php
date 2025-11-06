@@ -1,31 +1,3 @@
-<?php
-$servername = "localhost";
-$username = "root";
-$password = "root";
-$dbname = "shaolin";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
-}
-
-$sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome AS 'Modalidade'
-        FROM usuarios
-        INNER JOIN modA ON usuarios.id = modA.id_aluno
-        INNER JOIN modalidades ON modA.id_mod = modalidades.id
-        WHERE usuarios.tipo = 'A'
-        UNION
-        SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome AS 'Modalidade'
-        FROM usuarios
-        INNER JOIN modB ON usuarios.id = modB.id_aluno
-        INNER JOIN modalidades ON modB.id_mod = modalidades.id
-        WHERE usuarios.tipo = 'A'
-        ORDER BY Aluno, Modalidade;"; 
-    $result = $conn->query($sql);
-
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -35,7 +7,7 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="img/icon.png" type="image/x-icon">
-    <title>Shaolin Piracicaba | Cadastro de alunos</title>
+    <title>Shaolin Piracicaba | Login</title>
 </head>
 <body>
     <header>
@@ -56,7 +28,7 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
                             <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="index.html">Home</a>
+                                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="modalidades.html">Modalidades</a>
@@ -68,7 +40,7 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
                                     <a class="nav-link" href="premiacoes.html">Premiações</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page"  href="login.php">Área do Aluno/Professor</a>
+                                    <a class="nav-link" href="login.php"><b>Área do Aluno/Professor</b></a>
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
                                     <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
@@ -81,39 +53,17 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
             </div>
         </nav>
     </header>
-    <main class="d-flex flex-column align-items-center">
-        <h2 class="text-uppercase mt-4 mb-3 text-center"><b>Alunos</b></h2>  
-        <table class="table table-striped w-75">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Nome</th>
-              <th scope="col">Modalidade</th>
-            </tr>
-          </thead>
-          <tbody>
-              <?php
-                if ($result->num_rows > 0) {
-                    while($row = $result->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<th scope='row'>" . $row["id"] . "</th>";
-                        echo "<td>" . htmlspecialchars($row["Aluno"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($row["Modalidade"]) . "</td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='2'>0 resultados</td></tr>";
-                }
-                $conn->close();
-                ?>
-          </tbody>
-        </table>
-        <div class="d-flex w-75 mt-2">
-        	<a class="btn text-uppercase w-50 ms-0 btn_verde" href="incluir_aluno.php">Incluir</a>
-            <a class="btn text-uppercase w-50 me-0 voltar" href="area_professor.php">Voltar</a>
+    <main>
+
+    </main>
+    <footer class="d-flex justify-content-between align-items-center p-4">
+        <span>&copy; 2025 Shaolin Kung Fu Piraciaba - Todos os direitos reservados.</span>
+        <div class="redes-sociais">
+            <i class="fa-brands fa-whatsapp fa-xl m-1" style="color: #161616;"></i>
+            <i class="fa-brands fa-facebook fa-xl m-1" style="color: #161616;"></i>
+            <i class="fa-brands fa-instagram fa-xl m-1" style="color: #161616;"></i>
         </div>
-    </main>
-    </main>
+    </footer>
     <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

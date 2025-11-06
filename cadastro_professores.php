@@ -9,7 +9,7 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
-
+//AJUSTAR
 $sql = "SELECT 
             usuarios.id AS 'id',
             usuarios.nome AS 'Professor',
