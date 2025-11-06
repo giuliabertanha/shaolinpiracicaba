@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nome = $_POST['nome'];
         $telefone = $_POST['telefone'];
         $email = $_POST['email'];
-        $admin = isset($_POST['admin']) ? 1 : 0;
 
         $query_consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
         $result = $conn->query($query_consulta);
@@ -26,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<script>alert('Este nome de usuário já está em uso.');</script>";
             exit();
         } else {
-            $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'P', '$admin')";
+            $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'A', '0')";
 
             if ($conn->query($query_insert) === TRUE) {
                 // Dados salvos com sucesso
@@ -49,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="img/icon.png" type="image/x-icon">
-    <title>Shaolin Piracicaba | Incluir Professor</title>
+    <title>Shaolin Piracicaba | Incluir Aluno</title>
 </head>
 <body>
     <header>
@@ -96,8 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
     </header>
     <main class="d-flex flex-column align-items-center">
-		<h2 class="text-uppercase mt-4 mb-3 text-center"><b>Incluir professor</b></h2>  
-        <form class="w-75" action="incluir_professor.php" method="POST">
+		<h2 class="text-uppercase mt-4 mb-3 text-center"><b>Incluir aluno</b></h2>  
+        <form class="w-75" action="incluir_aluno.php" method="POST">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" name="nome" id="nome" required>
@@ -117,14 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" name="email" id="email" required>
-            </div>
-            <div class="mb-3">
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" name="admin" id="admin">
-                    Administrador
-                  </label>
-                </div>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
                 <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
