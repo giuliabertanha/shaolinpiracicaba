@@ -110,6 +110,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" class="form-control" name="senha" id="senha" minlength="6" maxlenght="30" required>
             </div>
             <div class="mb-3">
+                <label for="modalidades" class="form-label">Modalidades</label>
+                <div class="d-flex flex-row w-100 justify-content-between my-2">    
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="" id="">
+                        Shaolin do Norte
+                        </label>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Faixa
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 7</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 8</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 9</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 10</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 11</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 12</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="d-flex flex-row w-100 justify-content-between my-2">    
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="" id="">
+                        Shaolin Kids
+                        </label>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Faixa
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="d-flex flex-row w-100 justify-content-between my-2">    
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="" id="">
+                        Sanda - Boxe Chinês
+                        </label>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Estrela
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="d-flex flex-row w-100 justify-content-between my-2">    
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="" id="">
+                        Tai Chi Chuan
+                        </label>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Faixa
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
+                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
                 <label for="telefone" class="form-label">Telefone</label>
                 <input type="text" class="form-control" name="telefone" id="telefone" required>
             </div>
@@ -124,5 +217,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </main>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            dropdowns.forEach(dropdown => {
+                const button = dropdown.querySelector('.dropdown-bs-toggle');
+                const menuItems = dropdown.querySelectorAll('.dropdown-item');
+                const hiddenInput = dropdown.previousElementSibling;
+
+                menuItems.forEach(item => {
+                    item.addEventListener('click', function (event) {
+                        event.preventDefault();
+
+                        const selectedText = this.textContent;
+                        button.textContent = selectedText;
+
+                        if (hiddenInput && hiddenInput.type === 'hidden') {
+                            hiddenInput.value = selectedText;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>
