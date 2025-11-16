@@ -10,26 +10,78 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
+// Função para formatar o nome da modalidade e criar um nome de tabela válido
+function formatar_nome_tabela($nome, $conn) {
+    // Remove acentos e caracteres especiais
+    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
+    // Converte para minúsculas
+    $nome_minusculo = strtolower($nome_sem_acentos);
+    // Substitui espaços e outros caracteres não alfanuméricos por underscore
+    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
+    // Remove underscores duplicados ou no início/fim
+    $nome_tabela = trim($nome_tabela, '_');
+    // Escapa a string para segurança final
+    return mysqli_real_escape_string($conn, $nome_tabela);
+}
+
 $sql_professores = "SELECT id, nome FROM usuarios WHERE tipo = 'P' ORDER BY nome";
 $result_professores = $conn->query($sql_professores);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $nome = $_POST['nome'];
-        $professores_selecionados = isset($_POST['professores']) ? $_POST['professores'] : [];
+    $nome = $_POST['nome'];
+    $professores_selecionados = $_POST['professores'] ?? [];
 
-        $id_professor1 = isset($professores_selecionados[0]) ? $professores_selecionados[0] : 'NULL';
-        $id_professor2 = isset($professores_selecionados[1]) ? $professores_selecionados[1] : 'NULL';
-
-        $stmt = $conn->prepare("INSERT INTO modalidades (nome, id_professor1, id_professor2) VALUES (?, ?, ?)");
-        $stmt->bind_param("sii", $nome, $id_professor1, $id_professor2); //sii = string integer integer
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Dados salvos com sucesso!');</script>";
-        } else {
-            echo "<script>alert('Erro ao inserir dados: " . $stmt->error . "');</script>";
-        }
-        $stmt->close();
+    // Validação do número de professores
+    if (count($professores_selecionados) > 2) {
+        echo "<script>alert('Você só pode selecionar no máximo 2 professores.'); window.history.back();</script>";
+        exit;
     }
+
+    $id_professor1 = isset($professores_selecionados[0]) ? (int)$professores_selecionados[0] : null;
+    $id_professor2 = isset($professores_selecionados[1]) ? (int)$professores_selecionados[1] : null;
+
+    // Verifica se já existe uma modalidade com o mesmo nome
+    $stmt_check = $conn->prepare("SELECT id FROM modalidades WHERE nome = ?");
+    $stmt_check->bind_param("s", $nome);
+    $stmt_check->execute();
+    $stmt_check->store_result();
+
+    if ($stmt_check->num_rows > 0) {
+        $stmt_check->close(); // Fecha a consulta de verificação
+        echo "<script>alert('Já existe uma modalidade com este nome. Por favor, escolha outro.'); window.history.back();</script>";
+        exit;
+    }
+    $stmt_check->close(); // Garante que a consulta seja fechada em todos os casos
+
+    $stmt = $conn->prepare("INSERT INTO modalidades (nome, id_professor1, id_professor2) VALUES (?, ?, ?)");
+    $stmt->bind_param("sii", $nome, $id_professor1, $id_professor2);
+
+    if ($stmt->execute()) {
+        $novo_id = $conn->insert_id;
+        // Cria a nova tabela para a modalidade
+        $nome_tabela = formatar_nome_tabela($nome, $conn);
+        $sql_create_table = "CREATE TABLE `$nome_tabela` (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            id_aluno INT,
+            faixa CHAR(30),
+            id_professor INT,
+            id_mod INT,
+            FOREIGN KEY (id_aluno) REFERENCES usuarios(id),
+            FOREIGN KEY (id_professor) REFERENCES usuarios(id),
+            FOREIGN KEY (id_mod) REFERENCES modalidades(id)
+        )";
+        if ($conn->query($sql_create_table)) {
+            echo "<script>alert('Modalidade e tabela criadas com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
+        } else {
+            echo "<script>alert('Modalidade criada, mas houve um erro ao criar a tabela: " . $conn->error . "'); window.location.href = 'cadastro_modalidades.php';</script>";
+        }
+    } else {
+        echo "<script>alert('Erro ao inserir dados: " . $stmt->error . "');</script>";
+    }
+    $stmt->close();
+    $conn->close();
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -126,5 +178,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </main>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Bloqueia a seleção de mais de 2 professores
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('input[name="professores[]"]');
+
+            function updateCheckboxState() {
+                const checkedCount = document.querySelectorAll('input[name="professores[]"]:checked').length;
+
+                if (checkedCount > 2) {
+                    checkboxes.forEach(cb => {
+                        if (!cb.checked) {
+                            cb.disabled = true;
+                        }
+                    });
+                } else {
+                    checkboxes.forEach(cb => {
+                        cb.disabled = false;
+                    });
+                }
+            }
+            checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCheckboxState));
+        });
+    </script>
 </body>
 </html>

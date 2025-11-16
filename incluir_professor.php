@@ -220,19 +220,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Tai Chi Chuan
                         </label>
                     </div>
-                    <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Faixa
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
