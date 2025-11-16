@@ -120,43 +120,49 @@
                     <div class="loja-viewport my-5">
                         <div class="loja-track">
                             <div class="loja-item mb-3">
-                                <img src="img/bermuda.jpg" alt="Bermuda" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Bermuda." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
 
                             <div class="loja-item mb-3">
-                                <img src="img/calça.jpg" alt="Calça" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Cal%C3%A7a_Shaolin.jpeg?updatedAt=1763143187811" alt="Calça" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Calça." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
 
                             <div class="loja-item mb-3">
-                                <img src="img/camisa.jpg" alt="Camisa" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Camiseta_Shaolin.jpeg?updatedAt=1763143187797" alt="Camisa" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Camisa." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
 
                             <div class="loja-item mb-3">
-                                <img src="img/faixa.jpg" alt="Faixa" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Faixa_Branca_Shaolin.jpeg?updatedAt=1763143187806" alt="Faixa" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Faixa." 
+                                    target="_blank" class="btn btn_verde">Comprar</a>
+                            </div>
+                
+                            <div class="loja-item mb-3">
+                                <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda" class="loja-item-img">
+                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Bermuda%20Shaolin." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
 
                             <div class="loja-item mb-3">
-                                <img src="img/regata.jpg" alt="Regata" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Regata_Sanda.jpeg?updatedAt=1763143187740" alt="Regata" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Regata." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
 
                             <div class="loja-item mb-3">
-                                <img src="img/shorts.jpg" alt="Shorts" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Shorts_Sanda.jpeg?updatedAt=1763143187932" alt="Shorts" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20o%20Shorts." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
 
                             <div class="loja-item mb-3">
-                                <img src="img/leque.jpg" alt="Leque" class="loja-item-img">
+                                <img src="https://ik.imagekit.io/shaolin/img/Leque.jpeg?updatedAt=1763143187678" alt="Leque" class="loja-item-img">
                                 <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20o%20Leque." 
                                     target="_blank" class="btn btn_verde">Comprar</a>
                             </div>
