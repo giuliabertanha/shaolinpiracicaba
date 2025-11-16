@@ -10,17 +10,13 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-// Função para formatar o nome da modalidade e criar um nome de tabela válido
+//Formatando o nome da modalidade e criar um nome de tabela válido
 function formatar_nome_tabela($nome, $conn) {
-    // Remove acentos e caracteres especiais
     $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
     // Converte para minúsculas
     $nome_minusculo = strtolower($nome_sem_acentos);
-    // Substitui espaços e outros caracteres não alfanuméricos por underscore
     $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    // Remove underscores duplicados ou no início/fim
     $nome_tabela = trim($nome_tabela, '_');
-    // Escapa a string para segurança final
     return mysqli_real_escape_string($conn, $nome_tabela);
 }
 
@@ -40,25 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_professor1 = isset($professores_selecionados[0]) ? (int)$professores_selecionados[0] : null;
     $id_professor2 = isset($professores_selecionados[1]) ? (int)$professores_selecionados[1] : null;
 
-    // Verifica se já existe uma modalidade com o mesmo nome
+    //Verifica se já existe uma modalidade com o mesmo nome
     $stmt_check = $conn->prepare("SELECT id FROM modalidades WHERE nome = ?");
     $stmt_check->bind_param("s", $nome);
     $stmt_check->execute();
     $stmt_check->store_result();
 
     if ($stmt_check->num_rows > 0) {
-        $stmt_check->close(); // Fecha a consulta de verificação
+        $stmt_check->close();
         echo "<script>alert('Já existe uma modalidade com este nome. Por favor, escolha outro.'); window.history.back();</script>";
         exit;
     }
-    $stmt_check->close(); // Garante que a consulta seja fechada em todos os casos
+    $stmt_check->close();
 
     $stmt = $conn->prepare("INSERT INTO modalidades (nome, id_professor1, id_professor2) VALUES (?, ?, ?)");
     $stmt->bind_param("sii", $nome, $id_professor1, $id_professor2);
 
     if ($stmt->execute()) {
         $novo_id = $conn->insert_id;
-        // Cria a nova tabela para a modalidade
         $nome_tabela = formatar_nome_tabela($nome, $conn);
         $sql_create_table = "CREATE TABLE `$nome_tabela` (
             id INT PRIMARY KEY AUTO_INCREMENT,

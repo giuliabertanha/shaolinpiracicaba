@@ -10,17 +10,12 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-// Função para formatar o nome da modalidade e criar um nome de tabela válido
+//Formatando o nome da modalidade e criar um nome de tabela válido
 function formatar_nome_tabela($nome, $conn) {
-    // Remove acentos e caracteres especiais
     $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    // Converte para minúsculas
     $nome_minusculo = strtolower($nome_sem_acentos);
-    // Substitui espaços e outros caracteres não alfanuméricos por underscore
     $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    // Remove underscores duplicados ou no início/fim
     $nome_tabela = trim($nome_tabela, '_');
-    // Escapa a string para segurança final (embora o uso de crases já proteja)
     return mysqli_real_escape_string($conn, $nome_tabela);
 }
 
@@ -29,18 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //DELETE
     if (isset($_POST['excluir']) && !empty($id_modalidade_post)) {
-        // 1. Busca o nome da modalidade para saber qual tabela apagar
+        //Busca o nome da modalidade para saber qual tabela apagar
         $stmt_get_nome = $conn->prepare("SELECT nome FROM modalidades WHERE id = ?");
         $stmt_get_nome->bind_param("i", $id_modalidade_post);
         $stmt_get_nome->execute();
         $nome_modalidade = $stmt_get_nome->get_result()->fetch_assoc()['nome'];
         $stmt_get_nome->close();
 
-        // 2. Deleta o registro da modalidade
+        //Deleta o registro da modalidade
         $stmt = $conn->prepare("DELETE FROM modalidades WHERE id = ?");
         $stmt->bind_param("i", $id_modalidade_post);
         if ($stmt->execute()) {
-            // 3. Se teve sucesso, apaga a tabela correspondente
+            //Se teve sucesso, apaga a tabela correspondente
             $nome_tabela = formatar_nome_tabela($nome_modalidade, $conn);
             $conn->query("DROP TABLE IF EXISTS `$nome_tabela`");
             echo "<script>alert('Modalidade e todos os registros de alunos vinculados foram excluídos com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
@@ -56,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
     $professores_selecionados = $_POST['professores'] ?? [];
 
-     // Validação do número de professores
     if (count($professores_selecionados) > 2) {
         echo "<script>alert('Você só pode selecionar no máximo 2 professores.'); window.history.back();</script>";
         exit;
@@ -69,11 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // UPDATE
         $stmt = $conn->prepare("UPDATE modalidades SET nome = ?, id_professor1 = ?, id_professor2 = ? WHERE id = ?");
         $stmt->bind_param("siii", $nome, $id_professor1, $id_professor2, $id_modalidade_post);
-    }    // } else {
-    //     // INSERT
-    //     $stmt = $conn->prepare("INSERT INTO modalidades (nome, id_professor1, id_professor2) VALUES (?, ?, ?)");
-    //     $stmt->bind_param("sii", $nome, $id_professor1, $id_professor2);
-    // }
+    } 
 
     if ($stmt->execute()) {
         $novo_id = !empty($id_modalidade_post) ? $id_modalidade_post : $conn->insert_id;
