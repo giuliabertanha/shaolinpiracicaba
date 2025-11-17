@@ -26,15 +26,18 @@ $result_professores = $conn->query($sql_professores);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
     $professores_selecionados = $_POST['professores'] ?? [];
+    $faixas = $_POST['faixas'] ?? [];
 
     // Validação do número de professores
-    if (count($professores_selecionados) > 2) {
-        echo "<script>alert('Você só pode selecionar no máximo 2 professores.'); window.history.back();</script>";
+    if (count($professores_selecionados) > 4) {
+        echo "<script>alert('Você só pode selecionar no máximo 4 professores.'); window.history.back();</script>";
         exit;
     }
 
     $id_professor1 = isset($professores_selecionados[0]) ? (int)$professores_selecionados[0] : null;
     $id_professor2 = isset($professores_selecionados[1]) ? (int)$professores_selecionados[1] : null;
+    $id_professor3 = isset($professores_selecionados[2]) ? (int)$professores_selecionados[2] : null;
+    $id_professor4 = isset($professores_selecionados[3]) ? (int)$professores_selecionados[3] : null;
 
     //Verifica se já existe uma modalidade com o mesmo nome
     $stmt_check = $conn->prepare("SELECT id FROM modalidades WHERE nome = ?");
@@ -49,11 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt_check->close();
 
-    $stmt = $conn->prepare("INSERT INTO modalidades (nome, id_professor1, id_professor2) VALUES (?, ?, ?)");
-    $stmt->bind_param("sii", $nome, $id_professor1, $id_professor2);
+    $stmt = $conn->prepare("INSERT INTO modalidades (nome, id_professor1, id_professor2, id_professor3, id_professor4) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("siiii", $nome, $id_professor1, $id_professor2, $id_professor3, $id_professor4);
 
     if ($stmt->execute()) {
         $novo_id = $conn->insert_id;
+
         $nome_tabela = formatar_nome_tabela($nome, $conn);
         $sql_create_table = "CREATE TABLE `$nome_tabela` (
             id INT PRIMARY KEY AUTO_INCREMENT,
@@ -66,6 +70,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             FOREIGN KEY (id_mod) REFERENCES modalidades(id)
         )";
         if ($conn->query($sql_create_table)) {
+            // Inserir as faixas/estrelas na tabela 'graduacoes'
+            if (!empty($faixas)) {
+                $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
+                $ordem = 1;
+                foreach ($faixas as $faixa_nome) {
+                    $faixa_nome_trim = trim($faixa_nome);
+                    if (!empty($faixa_nome_trim)) {
+                        $stmt_faixa->bind_param("isi", $novo_id, $faixa_nome_trim, $ordem);
+                        $stmt_faixa->execute();
+                        $ordem++;
+                    }
+                }
+                $stmt_faixa->close();
+            }
+
             echo "<script>alert('Modalidade e tabela criadas com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
         } else {
             echo "<script>alert('Modalidade criada, mas houve um erro ao criar a tabela: " . $conn->error . "'); window.location.href = 'cadastro_modalidades.php';</script>";
@@ -165,23 +184,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 ?>
             </div>
-                <div class="d-flex w-100 mt-4 mb-5">
-                    <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                    <a href="cadastro_modalidades.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
+            <div class="mb-3">
+                <label class="form-label">Faixas/Estrelas</label>
+                <div id="faixas-container">
+                    <input type="text" class="form-control mb-2" name="faixas[]" placeholder="Nome da Faixa/Estrela">
                 </div>
+                <button type="button" id="add-faixa" class="btn btn-cinza mx-0 btn-sm mt-2 mb-0">Adicionar Faixa/Estrela</button>
+            </div>
+            <div class="d-flex w-100 mt-4 mb-5">
+                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
+                <a href="cadastro_modalidades.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
             </div>
         </form>
     </main>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script>
-        // Bloqueia a seleção de mais de 2 professores
+        // Bloqueia a seleção de mais de  professores
         document.addEventListener('DOMContentLoaded', function () {
             const checkboxes = document.querySelectorAll('input[name="professores[]"]');
 
             function updateCheckboxState() {
                 const checkedCount = document.querySelectorAll('input[name="professores[]"]:checked').length;
 
-                if (checkedCount > 2) {
+                if (checkedCount >= 4) {
                     checkboxes.forEach(cb => {
                         if (!cb.checked) {
                             cb.disabled = true;
@@ -194,6 +219,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCheckboxState));
+            updateCheckboxState(); // Executa ao carregar a página
+
+            //Adiciona campos de faixa/estrela dinamicamente
+            document.getElementById('add-faixa').addEventListener('click', function() {
+                const container = document.getElementById('faixas-container');
+                const newInput = document.createElement('input');
+                newInput.type = 'text';
+                newInput.className = 'form-control mb-2';
+                newInput.name = 'faixas[]';
+                newInput.placeholder = 'Nome da Faixa/Estrela';
+                container.appendChild(newInput);
+            });
         });
     </script>
 </body>

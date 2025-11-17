@@ -50,23 +50,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //UPDATE
     $nome = $_POST['nome'];
     $professores_selecionados = $_POST['professores'] ?? [];
+    $faixas = $_POST['faixas'] ?? [];
 
-    if (count($professores_selecionados) > 2) {
-        echo "<script>alert('Você só pode selecionar no máximo 2 professores.'); window.history.back();</script>";
+    if (count($professores_selecionados) >= 4) {
+        echo "<script>alert('Você só pode selecionar no máximo 4 professores.'); window.history.back();</script>";
         exit;
     }
 
     $id_professor1 = isset($professores_selecionados[0]) ? (int)$professores_selecionados[0] : null;
     $id_professor2 = isset($professores_selecionados[1]) ? (int)$professores_selecionados[1] : null;
+    $id_professor3 = isset($professores_selecionados[2]) ? (int)$professores_selecionados[2] : null;
+    $id_professor4 = isset($professores_selecionados[3]) ? (int)$professores_selecionados[3] : null;
 
     if (!empty($id_modalidade_post)) {
         // UPDATE
-        $stmt = $conn->prepare("UPDATE modalidades SET nome = ?, id_professor1 = ?, id_professor2 = ? WHERE id = ?");
-        $stmt->bind_param("siii", $nome, $id_professor1, $id_professor2, $id_modalidade_post);
+        $stmt = $conn->prepare("UPDATE modalidades SET nome = ?, id_professor1 = ?, id_professor2 = ?, id_professor3 = ?, id_professor4 = ? WHERE id = ?");
+        $stmt->bind_param("siiiii", $nome, $id_professor1, $id_professor2, $id_professor3, $id_professor4, $id_modalidade_post);
     } 
 
     if ($stmt->execute()) {
         $novo_id = !empty($id_modalidade_post) ? $id_modalidade_post : $conn->insert_id;
+
+        // Atualizar faixas/graduações
+        if (!empty($id_modalidade_post)) {
+            // 1. Deletar graduações antigas
+            $stmt_delete_faixas = $conn->prepare("DELETE FROM graduacoes WHERE id_modalidade = ?");
+            $stmt_delete_faixas->bind_param("i", $id_modalidade_post);
+            $stmt_delete_faixas->execute();
+            $stmt_delete_faixas->close();
+
+            // 2. Inserir as novas graduações
+            $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
+            $ordem = 1;
+            foreach ($faixas as $faixa_nome) {
+                if (!empty(trim($faixa_nome))) {
+                    $stmt_faixa->bind_param("isi", $id_modalidade_post, $faixa_nome, $ordem);
+                    $stmt_faixa->execute();
+                    $ordem++;
+                }
+            }
+            $stmt_faixa->close();
+        }
+
         echo "<script>alert('Dados salvos com sucesso!'); window.location.href = 'cadastro_modalidade.php?id=" . $novo_id . "';</script>";
     } else {
         echo "<script>alert('Erro ao salvar dados: " . $stmt->error . "');</script>";
@@ -81,7 +106,10 @@ $modalidade = [
     'nome' => '',
     'id_professor1' => null,
     'id_professor2' => null,
+    'id_professor3' => null,
+    'id_professor4' => null,
 ];
+$faixas_cadastradas = [];
 
 $sql_professores = "SELECT id, nome FROM usuarios WHERE tipo = 'P' ORDER BY nome";
 $result_professores = $conn->query($sql_professores);
@@ -90,7 +118,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_modalidade = $_GET['id'];
     $titulo_pagina = "Editar modalidade";
 
-    $stmt = $conn->prepare("SELECT id, nome, id_professor1, id_professor2 FROM modalidades WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, nome, id_professor1, id_professor2, id_professor3, id_professor4 FROM modalidades WHERE id = ?");
     $stmt->bind_param("i", $id_modalidade);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -102,6 +130,16 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit;
     }
     $stmt->close();
+
+    // Buscar as graduações existentes para esta modalidade
+    $stmt_faixas = $conn->prepare("SELECT nome FROM graduacoes WHERE id_modalidade = ? ORDER BY ordem");
+    $stmt_faixas->bind_param("i", $id_modalidade);
+    $stmt_faixas->execute();
+    $result_faixas = $stmt_faixas->get_result();
+    while ($faixa = $result_faixas->fetch_assoc()) {
+        $faixas_cadastradas[] = $faixa['nome'];
+    }
+    $stmt_faixas->close();
 }
 
 ?>
@@ -185,7 +223,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                         $result_professores->data_seek(0); 
                         while($professor = $result_professores->fetch_assoc()) {
                             $checked = '';
-                            if ($modalidade['id_professor1'] == $professor['id'] || $modalidade['id_professor2'] == $professor['id']) {
+                            if ($modalidade['id_professor1'] == $professor['id'] || $modalidade['id_professor2'] == $professor['id'] || $modalidade['id_professor3'] == $professor['id'] || $modalidade['id_professor4'] == $professor['id']) {
                                 $checked = 'checked';
                             }
                             echo '<div class="form-check">';
@@ -197,6 +235,20 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                         }
                     }
                 ?>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Faixas/Estrelas</label>
+                <div id="faixas-container">
+                    <?php if (!empty($faixas_cadastradas)): ?>
+                        <?php foreach ($faixas_cadastradas as $faixa): ?>
+                            <div class="mb-2 input-group">
+                                <input type="text" class="form-control" name="faixas[]" placeholder="Nome da Faixa/Estrela" style="border-radius: 0.375rem;" value="<?php echo htmlspecialchars($faixa); ?>">
+                                <button type="button" class="ms-2 remove-faixa">Remover</button>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <button type="button" id="add-faixa" class="btn btn-cinza mx-0 btn-sm mt-2 mb-0">Adicionar Faixa/Estrela</button>
             </div>
                 <div class="d-flex w-100 mt-4 mb-5">
                     <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
@@ -219,16 +271,34 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     }
                 });
             }
+
+            const faixasContainer = document.getElementById('faixas-container');
+
+            // Função para adicionar o evento de remoção
+            const addRemoveEvent = (button) => {
+                button.addEventListener('click', function() {
+                    this.parentElement.remove();
+                });
+            };
+
+            // Adiciona evento aos botões de remover já existentes
+            faixasContainer.querySelectorAll('.remove-faixa').forEach(addRemoveEvent);
+
+            // Se não houver faixas, adiciona um campo vazio
+            if (faixasContainer.children.length === 0) {
+                document.getElementById('add-faixa').click();
+            }
+
         });
 
-        // Bloqueia a seleção de mais de 2 professores
+        // Bloqueia a seleção de mais de 4 professores
         document.addEventListener('DOMContentLoaded', function () {
             const checkboxes = document.querySelectorAll('input[name="professores[]"]');
 
             function updateCheckboxState() {
                 const checkedCount = document.querySelectorAll('input[name="professores[]"]:checked').length;
 
-                if (checkedCount > 2) {
+                if (checkedCount >= 4) {
                     checkboxes.forEach(cb => {
                         if (!cb.checked) {
                             cb.disabled = true;
@@ -242,6 +312,30 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             }
             checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCheckboxState));
             updateCheckboxState();
+
+            //Adiciona campos de faixa/estrela dinamicamente
+            document.getElementById('add-faixa').addEventListener('click', function() {
+                const container = document.getElementById('faixas-container');
+                const div = document.createElement('div');
+                div.className = 'input-group mb-2';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-control';
+                input.name = 'faixas[]';
+                input.placeholder = 'Nome da Faixa/Estrela';
+                input.style.borderRadius = '0.375rem';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'ms-2 remove-faixa';
+                removeBtn.textContent = 'Remover';
+                removeBtn.addEventListener('click', () => div.remove());
+
+                div.appendChild(input);
+                div.appendChild(removeBtn);
+                container.appendChild(div);
+            });
         });
     </script>
 </body>

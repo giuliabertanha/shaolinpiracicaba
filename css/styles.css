@@ -8,6 +8,7 @@
     --black: #161616;
     --green: #BBCC87;
     --red: #E07D7D;
+    --dark-red: #780e0e;
 }
 
 * {
@@ -114,7 +115,7 @@ footer {
     background-color: var(--green) !important;
 }
 
-.voltar {
+.voltar, .btn-cinza {
     background-color: var(--gray) !important;
 }
 
@@ -130,6 +131,12 @@ footer {
 
 .faixa-estrela {
   width: 300px;
+}
+
+.remove-faixa {
+  color: var(--dark-red);
+  background: none;
+  border: none;
 }
 
 /*Alinhamento checkbox*/

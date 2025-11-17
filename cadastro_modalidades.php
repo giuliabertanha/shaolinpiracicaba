@@ -15,7 +15,7 @@ $sql = "SELECT
             modalidades.nome AS 'Modalidade', 
             GROUP_CONCAT(usuarios.nome SEPARATOR ', ') AS 'Professores' 
         FROM modalidades
-        LEFT JOIN usuarios ON usuarios.id = modalidades.id_professor1 OR usuarios.id = modalidades.id_professor2
+        LEFT JOIN usuarios ON usuarios.id = modalidades.id_professor1 OR usuarios.id = modalidades.id_professor2 OR usuarios.id = modalidades.id_professor3 OR usuarios.id = modalidades.id_professor4
         GROUP BY modalidades.id, modalidades.nome;"; 
     $result = $conn->query($sql);
 
