@@ -22,7 +22,7 @@ $sql = "SELECT
             GROUP_CONCAT(modalidades.nome SEPARATOR ', ') AS 'Modalidades'
         FROM modalidades
         RIGHT JOIN usuarios
-        ON usuarios.id = modalidades.id_professor1 or usuarios.id = modalidades.id_professor2
+        ON usuarios.id = modalidades.id_professor1 or usuarios.id = modalidades.id_professor2 or usuarios.id = modalidades.id_professor3 or usuarios.id = modalidades.id_professor4
         WHERE usuarios.tipo = 'P'
         GROUP BY
             usuarios.id,
@@ -100,7 +100,6 @@ $sql = "SELECT
         <table class="table table-striped w-75">
           <thead>
             <tr>
-              <th scope="col"></th>
               <th scope="col">Nome</th>
               <th scope="col">Modalidade</th>
             </tr>
@@ -111,7 +110,6 @@ $sql = "SELECT
                     while($row = $result->fetch_assoc()) {
                         $link = "cadastro_professor.php?id=" . $row["id"];
                         echo "<tr class='linha-clicavel' data-href='" . $link . "'>";
-                        echo "<th scope='row'>" . $row["id"] . "</th>";
                         echo "<td>" . htmlspecialchars($row["Professor"]) . "</td>";
                         echo "<td class='w-50'>" . htmlspecialchars($row["Modalidades"]) . "</td>";
                         echo "</tr>";
