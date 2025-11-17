@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+        /* Regra do carrossel para Desktop */
         @media (min-width: 768px) {
             .carousel-inner .carousel-item-end,
             .carousel-inner .carousel-item-start, 
@@ -20,17 +21,17 @@
                 justify-content: center;
             }
         }
-        
-        @media (max-width: 768px) {
-            .carousel-inner .carousel-item > div:not(:first-child) {
-                display: none !important;
+
+        @media (min-width: 768px) and (max-width: 1200px) {
+            .carousel-image-container {
+                margin: 0 1rem !important;
             }
         }
 
-        @media (max-width: 1270px) {
-            .conteudo {
-                flex-direction: column;
-                align-items: center
+        /* Regra do carrossel para Celular (esconde clones) */
+        @media (max-width: 768px) {
+            .carousel-inner .carousel-item > div:not(:first-child) {
+                display: none !important;
             }
         }
 
@@ -45,6 +46,22 @@
         .carousel-control-prev i,
         .carousel-control-next i {
             color: #161616 !important;
+        }
+
+        /* NOVO CSS para alinhar as imagens do carrossel */
+        .carousel-image-container {
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
+            padding: 0;
+            overflow: hidden;
+            margin: 0 auto 15px auto; /* Centraliza horizontalmente e adiciona margem inferior */
+            display: block; /* Garante que 'margin: auto' funcione */
+        }
+        .carousel-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Garante que a imagem preencha o container sem distorcer */
         }
     </style>
 </head>
@@ -101,102 +118,113 @@
             </div>
         </nav>
     </header>
-    <main class="m-auto w-75">
-        <section class="sobre d-flex flex-column align-items-center">
-            <h2 class="text-uppercase mt-4 mb-3 text-center"><b>Sobre</b></h2>
-            <div class="conteudo d-flex flex-direction-row">
-                <div class="texto-sobre">
-                    <p>O professor Paulo Medeiros é praticante dedicado e professor de Kung Fu, com anos de experiência no estudo e no ensino das artes marciais chinesas. Iniciou sua jornada, buscando aprimoramento físico e equilíbrio mental, e ao longo do tempo, transformou essa paixão em um caminho de vida.</p>
-                    <p>Formado em Educação Física pela UNIMEP e nos estilos Shaolin do Norte, Sanda e Shuaijiao atua como professor na Escola Shaolin e técnico da Seleção Brasileira de Kung Fu Wushu (CBKW) no departamento de Shuaijiao. desenvolveu profundo conhecimento nas técnicas tradicionais e nos princípios filosóficos que fundamentam o verdadeiro Kung Fu.</p>
-                    <p>Com uma metodologia que une disciplina, respeito e motivação, o Professor Paulo Medeiros busca transmitir a cada aluno não apenas a técnica, mas também os valores que fazem do Kung Fu uma arte de autoconhecimento e superação.</p>
-                    <p>Participou de diversos cursos, seminários, campeonatos nacionais e internacionais, representando nossa cidade e nosso país, mantendo assim o compromisso de aprimorar-se e preservar a essência do Kung Fu tradicional.</p>
-                </div>
-                <img class="rounded-4" style="width: 330px; height: 380px;" src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/PHOTO-2025-11-06-12-11-07.jpg?updatedAt=1762442674110" class="w-75" alt="Professor Paulo Medeiros">
-            </div>
-        </section>
-        <section class="estrutura d-flex flex-column align-items-center">
-            <h2 class="mb-3">ESTRUTURA</h2>
-            <p>Nossa academia foi planejada para proporcionar conforto, segurança e o ambiente ideal para o aprendizado e a prática do Kung Fu. Contamos com um espaço amplo, arejado e cuidadosamente organizado, oferecendo todas as condições necessárias para treinos de qualidade e bem-estar dos alunos.</p>
-            <p>O salão principal possui piso adequado para atividades marciais, espelhos para correção de postura e iluminação que garante uma atmosfera harmoniosa e inspiradora. Também dispomos de equipamentos de apoio, como sacos de pancada, colchonetes, aparadores, escudos e armas tradicionais chinesas, utilizados nos treinos técnicos e nas práticas avançadas.</p>
-        </section>
 
-        <section>
-            <div id="estruturaCarousel" class="carousel slide mb-5" data-bs-ride="carousel" data-bs-wrap="true">
-                <div class="carousel-inner">
-                    <div class="carousel-item">
-                        <div class="col-md-4 fade-in d-flex justify-content-center">
-                            <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                <div style="width: 250px; height: 250px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                    <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_123533145.png?updatedAt=1762443368660" alt="Estrutura da academia 1" class="loja-item-img">
-                                </div>
+    <main>
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-11 col-xl-10">
+
+                    <section class="sobre d-flex flex-column align-items-center">
+                        <h2 class="text-uppercase mt-4 mb-3 text-center"><b>Sobre</b></h2>
+                        
+                        <div class="row align-items-center">
+                            <div class="col-lg-7 texto-sobre">
+                                <p>O professor Paulo Medeiros é praticante dedicado e professor de Kung Fu, com anos de experiência no estudo e no ensino das artes marciais chinesas. Iniciou sua jornada, buscando aprimoramento físico e equilíbrio mental, e ao longo do tempo, transformou essa paixão em um caminho de vida.</p>
+                                <p>Formado em Educação Física pela UNIMEP e nos estilos Shaolin do Norte, Sanda e Shuaijiao atua como professor na Escola Shaolin e técnico da Seleção Brasileira de Kung Fu Wushu (CBKW) no departamento de Shuaijiao. desenvolveu profundo conhecimento nas técnicas tradicionais e nos princípios filosóficos que fundamentam o verdadeiro Kung Fu.</p>
+                                <p>Com uma metodologia que une disciplina, respeito e motivação, o Professor Paulo Medeiros busca transmitir a cada aluno não apenas a técnica, mas também os valores que fazem do Kung Fu uma arte de autoconhecimento e superação.</p>
+                                <p>Participou de diversos cursos, seminários, campeonatos nacionais e internacionais, representando nossa cidade e nosso país, mantendo assim o compromisso de aprimorar-se e preservar a essência do Kung Fu tradicional.</p>
+                            </div>
+                            <div class="col-lg-5 text-center my-4 my-lg-0">
+                                <img class="rounded-4 img-fluid" style="max-width: 330px;" src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/PHOTO-2025-11-06-12-11-07.jpg?updatedAt=1762442674110" alt="Professor Paulo Medeiros">
                             </div>
                         </div>
-                    </div>
-                    <div class="carousel-item active">
-                        <div class="col-md-4 fade-in d-flex justify-content-center"> 
-                            <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                <div style="width: 250px; height: 250px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                    <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122735615.png?updatedAt=1762442860709" alt="Estrutura da academia 2" class="loja-item-img">
+                    </section>
+
+                    <section class="estrutura d-flex flex-column align-items-center mt-5">
+                        <h2 class="mb-3">ESTRUTURA</h2>
+                        <p>Nossa academia foi planejada para proporcionar conforto, segurança e o ambiente ideal para o aprendizado e a prática do Kung Fu. Contamos com um espaço amplo, arejado e cuidadosamente organizado, oferecendo todas as condições necessárias para treinos de qualidade e bem-estar dos alunos.</p>
+                        <p>O salão principal possui piso adequado para atividades marciais, espelhos para correção de postura e iluminação que garante uma atmosfera harmoniosa e inspiradora. Também dispomos de equipamentos de apoio, como sacos de pancada, colchonetes, aparadores, escudos e armas tradicionais chinesas, utilizados nos treinos técnicos e nas práticas avançadas.</p>
+                    </section>
+
+                    <section>
+                        <div id="estruturaCarousel" class="carousel slide mb-5" data-bs-ride="carousel" data-bs-wrap="true">
+                            <div class="carousel-inner">
+                                <div class="carousel-item">
+                                    <div class="col-md-4 fade-in d-flex justify-content-center">
+                                        <div class="carousel-image-container">
+                                            <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_123533145.png?updatedAt=1762443368660" alt="Estrutura da academia 1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item active">
+                                    <div class="col-md-4 fade-in d-flex justify-content-center"> 
+                                        <div class="carousel-image-container">
+                                            <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122735615.png?updatedAt=1762442860709" alt="Estrutura da academia 2">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-md-4 fade-in d-flex justify-content-center">
+                                        <div class="carousel-image-container">
+                                            <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122753428.png?updatedAt=1762442901531" alt="Estrutura da academia 3">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-md-4 fade-in d-flex justify-content-center">
+                                        <div class="carousel-image-container">
+                                            <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122812495.png?updatedAt=1762442901764" alt="Estrutura da academia 4">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#estruturaCarousel" data-bs-slide="prev">
+                                <i class="fa-solid fa-chevron-left fa-3x"></i>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#estruturaCarousel" data-bs-slide="next">
+                                <i class="fa-solid fa-chevron-right fa-3x"></i>
+                                <span class="visually-hidden">Próximo</span>
+                            </button>
                         </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="col-md-4 fade-in d-flex justify-content-center">
-                            <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                <div style="width: 250px; height: 250px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                    <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122753428.png?updatedAt=1762442901531" alt="Estrutura da academia 3" class="loja-item-img">
-                                </div>
-                            </div>
+                    </section>
+                    
+                    <section class="estrutura d-flex flex-column">
+                        <p>Além disso, nossa estrutura conta com banheiros, área de recepção, espaço para alongamento e fortalecimento, onde os alunos e familiares podem interagir e acompanhar as aulas. Tudo é pensado para unir tradição e conforto, criando um ambiente que estimula o foco, a disciplina e o crescimento pessoal.</p>
+                        <p>Aqui, cada detalhe foi projetado para que o praticante vivencie o verdadeiro espírito do Kung Fu — com segurança, respeito e energia positiva.</p>
+                    </section>
+                    
+                    <section class="parceiros mb-4">
+                        <h2 class="text-center">PARCEIROS</h2> <div class="logos d-flex justify-content-center flex-wrap mt-3">
+                            <div class="parceiro"><img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122944344.png?updatedAt=1762443025289" alt="Logo Parceiro 1"></div>
+                            <div class="parceiro"><img src="img/gbc.jpg" alt="Logo Parceiro 2"></div>
+                            <div class="parceiro"><img src="img/avec.png" alt="Logo Parceiro 3"></div>
+                            <div class="parceiro"><img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_123009966.png?updatedAt=1762443024481" alt="Logo Parceiro 4"></div>
+                            <div class="parceiro"><img src="img/nineyards.jpeg" alt="Logo Parceiro 5"></div>
+                            <div class="parceiro"><img src="img/mcr.jpeg" alt="Logo Parceiro 6"></div>
+                            <div class="parceiro"><img src="img/nutricesta.png" alt="Logo Parceiro 7"></div>
                         </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="col-md-4 fade-in d-flex justify-content-center">
-                            <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                <div style="width: 250px; height: 250px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                    <img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122812495.png?updatedAt=1762442901764" alt="Estrutura da academia 4" class="loja-item-img">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#estruturaCarousel" data-bs-slide="prev">
-                    <i class="fa-solid fa-chevron-left fa-3x"></i>
-                    <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#estruturaCarousel" data-bs-slide="next">
-                    <i class="fa-solid fa-chevron-right fa-3x"></i>
-                    <span class="visually-hidden">Próximo</span>
-                </button>
-            </div>
-        </section>
-        <section class="estrutura d-flex flex-column">
-            <p>Além disso, nossa estrutura conta com banheiros, área de recepção, espaço para alongamento e fortalecimento, onde os alunos e familiares podem interagir e acompanhar as aulas. Tudo é pensado para unir tradição e conforto, criando um ambiente que estimula o foco, a disciplina e o crescimento pessoal.</p>
-            <p>Aqui, cada detalhe foi projetado para que o praticante vivencie o verdadeiro espírito do Kung Fu — com segurança, respeito e energia positiva.</p>
-        </section>
-        <section class="parceiros mb-4">
-            <h2>PARCEIROS</h2>
-            <div class="logos d-flex justify-content-center flex-wrap mt-3">
-                <div class="parceiro"><img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_122944344.png?updatedAt=1762443025289" alt="Logo Parceiro 1"></div>
-                <div class="parceiro"><img src="img/gbc.jpg" alt="Logo Parceiro 2"></div>
-                <div class="parceiro"><img src="img/avec.png" alt="Logo Parceiro 3"></div>
-                <div class="parceiro"><img src="https://ik.imagekit.io/shaolinpic/Sobre_Shaolin/imagem_2025-11-06_123009966.png?updatedAt=1762443024481" alt="Logo Parceiro 4"></div>
-                <div class="parceiro"><img src="img/nineyards.jpeg" alt="Logo Parceiro 5"></div>
-                <div class="parceiro"><img src="img/mcr.jpeg" alt="Logo Parceiro 6"></div>
-                <div class="parceiro"><img src="img/nutricesta.png" alt="Logo Parceiro 7"></div>
-            </div>
-        </section>
-    </main>
+                    </section>
+
+                </div></div></div></main>
+
     <footer class="d-flex justify-content-between align-items-center p-4">
         <span>&copy; 2025 Shaolin Kung Fu Piracicaba - Todos os direitos reservados.</span>
         <div class="redes-sociais">
-            <i class="fa-brands fa-whatsapp fa-xl m-1" style="color: #161616;"></i>
-            <i class="fa-brands fa-facebook fa-xl m-1" style="color: #161616;"></i>
-            <i class="fa-brands fa-instagram fa-xl m-1" style="color: #161616;"></i>
+            <a href="https://api.whatsapp.com/send/?phone=5519995194437" target="_blank">
+                <i class="fa-brands fa-whatsapp fa-xl m-1" style="color: #161616;"></i>
+            </a>
+            <a href="https://www.facebook.com/shaolinpiracicaba/?locale=pt_BR" target="_blank">
+                <i class="fa-brands fa-facebook fa-xl m-1" style="color: #161616;"></i>
+            </a>
+            <a href="https://www.instagram.com/shaolinpiracicaba/" target="_blank">
+                <i class="fa-brands fa-instagram fa-xl m-1" style="color: #161616;"></i>
+            </a>
         </div>
     </footer>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script>
+
         let items = document.querySelectorAll('#estruturaCarousel .carousel-item')
 
         items.forEach((el) => {
