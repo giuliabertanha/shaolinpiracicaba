@@ -15,8 +15,8 @@ $sql = "SELECT
             usuarios.nome AS 'Professor',
             GROUP_CONCAT(modalidades.nome SEPARATOR ', ') AS 'Modalidades'
         FROM modalidades
-        INNER JOIN usuarios
-        ON usuarios.id = modalidades.id_professor1
+        RIGHT JOIN usuarios
+        ON usuarios.id = modalidades.id_professor1 or usuarios.id = modalidades.id_professor2
         WHERE usuarios.tipo = 'P'
         GROUP BY
             usuarios.id,

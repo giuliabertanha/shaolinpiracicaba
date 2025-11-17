@@ -152,22 +152,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                     <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Faixa
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
+                            Faixa/Estrela
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 7</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 8</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 9</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 10</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 11</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 12</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Branca</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Amarela</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Azul</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Verde</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Vermelha</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Preta</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Azul</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Cinza</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Preta</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Azul Yin Yang</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Cinza Yin Yang</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Preta Yin Yang</a></li>
                         </ul>
                     </div>
                 </div>
@@ -179,16 +179,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                     <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Faixa
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Branca Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Laranja</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Amarela com Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Roxa</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Azul Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Marrom</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Verde Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Verde</a></li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -200,16 +203,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                     <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Estrela
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela com Contorno Prata e o Centro Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela com Contorno Prata e o Centro Vermelho</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Prata</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela com Contorno Dourado e o Centro Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Dourada com o Centro Vermelho</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Dourada</a></li>
                         </ul>
                     </div>
                 </div>
@@ -230,5 +233,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            //Habilita o dropdown de faixa/estrela apenas se a modalidade for selecionada
+            const modalityRows = document.querySelectorAll('.mb-3 .d-flex.flex-row.w-100.justify-content-between.my-2');
+
+            modalityRows.forEach(row => {
+                const checkbox = row.querySelector('input[type="checkbox"].form-check-input');
+                const dropdownButton = row.querySelector('.dropdown-bs-toggle');
+
+                if (checkbox && dropdownButton) {
+                    const originalButtonText = dropdownButton.textContent.trim();
+ 
+                    dropdownButton.disabled = !checkbox.checked;
+
+                    checkbox.addEventListener('change', function() {
+                        dropdownButton.disabled = !this.checked;
+                        if (!this.checked) {
+                            // Se desmarcado, restaura o texto original do botão
+                            dropdownButton.textContent = originalButtonText;
+                        }
+                    });
+                }
+            });
+
+            //Validação do formulário
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+                let errorMessage = '';
+
+                modalityRows.forEach(row => {
+                    const checkbox = row.querySelector('input[type="checkbox"].form-check-input');
+                    const dropdownButton = row.querySelector('.dropdown-bs-toggle');
+                    const modalityName = row.querySelector('.form-check-label').textContent.trim();
+
+                    //Faixa/estrela não selecionada
+                    if (checkbox.checked && dropdownButton.textContent.trim() === 'Faixa/Estrela') {
+                        isValid = false;
+                        errorMessage = `Por favor, selecione a Faixa/Estrela para a modalidade "${modalityName}".`;
+                    }
+                });
+
+                if (!isValid) {
+                    alert(errorMessage);
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
