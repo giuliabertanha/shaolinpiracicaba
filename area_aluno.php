@@ -96,7 +96,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'A') {
                 <span>Faixa/Estrela</span>
             </div>
             <div class="d-flex justify-content-center">
-                <a href="cadastro.html" class="btn btn_verde w-100 mx-0">MEU CADASTRO</a>
+                <a href="cadastro.php" class="btn btn_verde w-100 mx-0">MEU CADASTRO</a>
             </div>
             <section class="section mt-5" id="graduacao">
                 <h2 class="text-center">GRADUAÇÃO POR FAIXA</h2>

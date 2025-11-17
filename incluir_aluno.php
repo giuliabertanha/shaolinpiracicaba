@@ -114,15 +114,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form class="w-75" action="incluir_aluno.php" method="POST">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
-                <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" required>
+                <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" required>
+                <div id="nome-error" class="form-error"></div>
             </div>
-            <div class="mb-3">
-                <label for="usuario" class="form-label">Usuário</label>
-                <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" required>
+            <div class="d-flex flex-direction-row mb-3">
+                <div class="me-2 w-50">
+                    <label for="usuario" class="form-label">Usuário</label>
+                    <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" required>
+                    <div id="usuario-error" class="form-error"></div>
+                </div>
+                <div class="mx-2 w-50">
+                    <label for="senha" class="form-label">Senha</label>
+                    <input type="password" class="input-field" name="senha" id="senha" minlength="6" maxlength="30" autocomplete="off" required>
+                    <div id="senha-error" class="form-error"></div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="input-field" name="senha" id="senha" minlength="6" maxlenght="30" autocomplete="off" required>
+            <div class="d-flex flex-direction-row mb-3">
+                <div class="me-2 w-50">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" required>
+                    <div id="email-error" class="form-error"></div>
+                </div>
+                <div class="ms-2 w-50">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input type="text" class="input-field" name="telefone" id="telefone" autocomplete="off" maxlength="15" required>
+                    <div id="telefone-error" class="form-error"></div>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="modalidades" class="form-label">Modalidades</label>
@@ -134,22 +151,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                     <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Faixa
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
+                            Faixa/Estrela
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 7</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 8</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 9</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 10</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 11</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 12</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Branca</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Amarela</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Azul</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Verde</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Vermelha</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Preta</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Azul</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Cinza</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Preta</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Azul Yin Yang</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Cinza Yin Yang</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Preta Yin Yang</a></li>
                         </ul>
                     </div>
                 </div>
@@ -161,16 +178,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                     <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Faixa
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Branca Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Laranja</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Amarela com Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Roxa</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Azul Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Marrom</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Verde Risco Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Faixa Verde</a></li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -182,16 +202,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </label>
                     </div>
                     <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Estrela
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela com Contorno Prata e o Centro Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela com Contorno Prata e o Centro Vermelho</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Prata</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela com Contorno Dourado e o Centro Preto</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Dourada com o Centro Vermelho</a></li>
+                            <li><a class="dropdown-item" href="#">Estrela Dourada</a></li>
                         </ul>
                     </div>
                 </div>
@@ -202,32 +222,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Tai Chi Chuan
                         </label>
                     </div>
-                    <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Faixa
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Opção 1</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 2</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 3</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 4</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 5</a></li>
-                            <li><a class="dropdown-item" href="#">Opção 6</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
-            <div class="mb-3">
-                <label for="telefone" class="form-label">Telefone</label>
-                <input type="text" class="input-field" name="telefone" id="telefone" autocomplete="off" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="input-field" name="email" id="email" autocomplete="off" required>
-            </div>
             <div class="d-flex w-100 mt-4 mb-5">
-                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                <a href="cadastro_alunos.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
+                <button type="submit" id="submit-button" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
+                <a href="cadastro_professores.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
             </div>
         </form>
     </main>
