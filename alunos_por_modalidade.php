@@ -10,6 +10,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
+if (!isset($_POST['login'])) {
+    header("Location: login.php");
+    exit();
+}
+
 $sql_a = "SELECT usuarios.nome AS 'Aluno', modA.faixa AS 'Faixa' FROM modA INNER JOIN usuarios ON usuarios.id = modA.id_aluno WHERE usuarios.tipo='A';"; 
 $sql_b = "SELECT usuarios.nome AS 'Aluno', modB.faixa AS 'Faixa' FROM modB INNER JOIN usuarios ON usuarios.id = modB.id_aluno WHERE usuarios.tipo='A';"; 
 $sql_c = "SELECT usuarios.nome AS 'Aluno', modC.faixa AS 'Faixa' FROM modC INNER JOIN usuarios ON usuarios.id = modC.id_aluno WHERE usuarios.tipo='A';"; 

@@ -10,6 +10,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
+if (!isset($_POST['login'])) {
+    header("Location: login.php");
+    exit();
+}
+
 //Formatando o nome da modalidade e criar um nome de tabela válido
 function formatar_nome_tabela($nome, $conn) {
     $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
