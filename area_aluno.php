@@ -1,4 +1,5 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "root";
@@ -10,7 +11,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-if (!isset($_POST['login'])) {
+if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'A') {
     header("Location: login.php");
     exit();
 }
@@ -61,7 +62,7 @@ if (!isset($_POST['login'])) {
                             <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                                    <a class="nav-link" href="index.html">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="modalidades.html">Modalidades</a>
@@ -73,7 +74,7 @@ if (!isset($_POST['login'])) {
                                     <a class="nav-link" href="premiacoes.html">Premiações</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="login.php">Área do Aluno/Professor</a>
+                                    <a class="nav-link active" aria-current="page"  href="area_aluno.php">Área do Aluno</a>
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
                                     <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>

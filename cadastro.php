@@ -1,4 +1,5 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "root";
@@ -10,7 +11,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-if (!isset($_POST['login'])) {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
 }
@@ -59,7 +60,7 @@ if (!isset($_POST['login'])) {
                                     <a class="nav-link" href="premiacoes.html">Premiações</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="login.php"><b>Área do Aluno/Professor</b></a>
+                                    <a class="nav-link" href="login.php">Área do Aluno/Professor</a>
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
                                     <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
