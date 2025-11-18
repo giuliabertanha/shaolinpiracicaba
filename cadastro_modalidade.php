@@ -244,23 +244,23 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <div class="mb-3">
                 <label class="form-label">Faixas/Estrelas</label>
                 <div id="faixas-container">
-                    <?php if (!empty($faixas_cadastradas)): ?>
-                        <?php foreach ($faixas_cadastradas as $faixa): ?>
+                    <?php if (!empty($faixas_cadastradas)) { ?>
+                        <?php foreach ($faixas_cadastradas as $faixa) { ?>
                             <div class="mb-2 input-group">
                                 <input type="text" class="form-control" name="faixas[]" placeholder="Nome da Faixa/Estrela" style="border-radius: 0.375rem;" value="<?php echo htmlspecialchars($faixa); ?>">
                                 <button type="button" class="ms-2 remove-faixa">Remover</button>
                             </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        <?php } ?>
+                    <?php } ?>
                 </div>
                 <button type="button" id="add-faixa" class="btn btn-cinza mx-0 btn-sm mt-2 mb-0">Adicionar Faixa/Estrela</button>
             </div>
                 <div class="d-flex w-100 mt-4 mb-5">
                     <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                    <a href="cadastro_modalidades.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
-                    <?php if ($id_modalidade): ?>
+                    <a href="cadastro_modalidades.php" class="btn text-uppercase w-50 voltar">Voltar</a>
+                    <?php if ($id_modalidade) { ?>
                         <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" id="btn-excluir">Excluir</button>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </form>

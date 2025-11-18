@@ -16,13 +16,59 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-// Função para formatar o nome da modalidade para um nome de tabela válido
+// Formatando o nome da modalidade para um nome de tabela válido
 function formatar_nome_tabela($nome) {
     $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
     $nome_minusculo = strtolower($nome_sem_acentos);
     $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
     $nome_tabela = trim($nome_tabela, '_');
     return $nome_tabela;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_professor_post = $_POST['id'] ?? null;
+
+    // --- EXCLUSÃO ---
+    if (isset($_POST['excluir']) && !empty($id_professor_post)) {
+        $conn->begin_transaction();
+        try {
+            // 1. Desassociar professor das modalidades
+            $stmt_update_mod1 = $conn->prepare("UPDATE modalidades SET id_professor1 = NULL WHERE id_professor1 = ?");
+            $stmt_update_mod1->bind_param("i", $id_professor_post);
+            $stmt_update_mod1->execute();
+            $stmt_update_mod1->close();
+
+            $stmt_update_mod2 = $conn->prepare("UPDATE modalidades SET id_professor2 = NULL WHERE id_professor2 = ?");
+            $stmt_update_mod2->bind_param("i", $id_professor_post);
+            $stmt_update_mod2->execute();
+            $stmt_update_mod2->close();
+
+            $stmt_update_mod3 = $conn->prepare("UPDATE modalidades SET id_professor3 = NULL WHERE id_professor3 = ?");
+            $stmt_update_mod3->bind_param("i", $id_professor_post);
+            $stmt_update_mod3->execute();
+            $stmt_update_mod3->close();
+
+            $stmt_update_mod4 = $conn->prepare("UPDATE modalidades SET id_professor4 = NULL WHERE id_professor4 = ?");
+            $stmt_update_mod4->bind_param("i", $id_professor_post);
+            $stmt_update_mod4->execute();
+            $stmt_update_mod4->close();
+
+            // 2. Excluir o usuário professor
+            $stmt_delete_user = $conn->prepare("DELETE FROM usuarios WHERE id = ? AND tipo = 'P'");
+            $stmt_delete_user->bind_param("i", $id_professor_post);
+            $stmt_delete_user->execute();
+            $stmt_delete_user->close();
+
+            $conn->commit();
+            echo "<script>alert('Professor excluído com sucesso!'); window.location.href = 'cadastro_professores.php';</script>";
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo "<script>alert('Erro ao excluir professor: " . $e->getMessage() . "'); window.history.back();</script>";
+        }
+        $conn->close();
+        exit;
+    }
+    // Futuramente, a lógica de UPDATE (salvar) virá aqui.
 }
 
 $id_professor = null;
@@ -38,7 +84,6 @@ $professor_modalidades = []; // Armazena as modalidades e graduações do profes
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_professor = $_GET['id'];
-    $titulo_pagina = "Cadastro do professor";
 
     $stmt = $conn->prepare("SELECT nome, usuario, telefone, email, admin FROM usuarios WHERE id = ? AND tipo = 'P'");
     $stmt->bind_param("i", $id_professor);
@@ -75,6 +120,19 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
         }
     }
 }
+
+$sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
+$result_modalidades = $conn->query($sql_modalidades);
+$modalidades_disponiveis = [];
+if ($result_modalidades && $result_modalidades->num_rows > 0) {
+    while($row = $result_modalidades->fetch_assoc()) {
+        $stmt_graduacoes = $conn->prepare("SELECT nome FROM graduacoes WHERE id_modalidade = ? ORDER BY ordem");
+        $stmt_graduacoes->bind_param("i", $row['id']);
+        $stmt_graduacoes->execute();
+        $modalidades_disponiveis[] = ['modalidade' => $row, 'graduacoes' => $stmt_graduacoes->get_result()->fetch_all(MYSQLI_ASSOC)];
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -142,7 +200,7 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
         </nav>
     </header>
     <main class="d-flex flex-column align-items-center">
-		<h2 class="text-uppercase mt-4 mb-3 text-center"><b><?php echo $titulo_pagina; ?></b></h2>  
+		<h2 class="text-uppercase mt-4 mb-3 text-center"><b>Cadastro do professor</b></h2>  
         <form class="w-75" action="cadastro_professor.php" method="POST">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_professor); ?>">
             <div class="mb-3">
@@ -184,49 +242,41 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
             </div>
             <div class="mb-3">
                 <label for="modalidades" class="form-label">Modalidades</label>
-                <?php foreach ($modalidades_disponiveis as $modalidade):
-                    $id_modalidade = $modalidade['id'];
-                    $nome_modalidade = htmlspecialchars($modalidade['nome']);
-                    
-                    $checked = isset($professor_modalidades[$id_modalidade]) ? 'checked' : '';
-                    $graduacao_selecionada = $professor_modalidades[$id_modalidade] ?? 'Faixa/Estrela';
-                    
-                    $graduacoes = [];
-                    if (stripos($nome_modalidade, 'shaolin do norte') !== false) {
-                        $graduacoes = ['Faixa Branca', 'Faixa Amarela', 'Faixa Azul', 'Faixa Verde', 'Faixa Vermelha', 'Faixa Preta', 'Estrela Azul', 'Estrela Cinza', 'Estrela Preta', 'Estrela Azul Yin Yang', 'Estrela Cinza Yin Yang', 'Estrela Preta Yin Yang'];
-                    } else if (stripos($nome_modalidade, 'shaolin kids') !== false) {
-                        $graduacoes = ['Faixa Branca Risco Preto', 'Faixa Laranja', 'Faixa Amarela com Risco Preto', 'Faixa Roxa', 'Faixa Azul Risco Preto', 'Faixa Marrom', 'Faixa Verde Risco Preto', 'Faixa Verde'];
-                    } else if (stripos($nome_modalidade, 'sanda') !== false) {
-                        $graduacoes = ['Estrela com Contorno Prata e o Centro Preto', 'Estrela com Contorno Prata e o Centro Vermelho', 'Estrela Prata', 'Estrela com Contorno Dourado e o Centro Preto', 'Estrela Dourada com o Centro Vermelho', 'Estrela Dourada'];
-                    }
+                <?php foreach ($modalidades_disponiveis as $item) {
+                    $id_modalidade = $item['modalidade']['id'];
+                    $nome_modalidade = htmlspecialchars($item['modalidade']['nome']);
+                    $graduacoes = $item['graduacoes'];
                 ?>
                 <div class="d-flex flex-row w-100 justify-content-between my-2">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1" <?php echo $checked; ?>>
+                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1">
                             <?php echo $nome_modalidade; ?>
                         </label>
                     </div>
                     
-                    <?php if (!empty($graduacoes)): ?>
+                    <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
-                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="<?php echo htmlspecialchars($graduacao_selecionada); ?>">
+                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="">
                         <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
-                            <?php echo htmlspecialchars($graduacao_selecionada); ?>
+                            Faixa/Estrela
                         </button>
                         <ul class="dropdown-menu">
-                            <?php foreach ($graduacoes as $graduacao): ?>
-                            <li><a class="dropdown-item" href="#"><?php echo htmlspecialchars($graduacao); ?></a></li>
-                            <?php endforeach; ?>
+                            <?php foreach ($graduacoes as $graduacao) { ?>
+                            <li><a class="dropdown-item" href="#"><?php echo htmlspecialchars($graduacao['nome']); ?></a></li>
+                            <?php } ?>
                         </ul>
                     </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
-                <button type="submit" id="submit-button" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                <a href="cadastro_professores.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
+                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
+                <a href="cadastro_professores.php" class="btn text-uppercase w-50 voltar">Voltar</a>
+                <?php if ($id_professor) { ?>
+                    <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" id="btn-excluir">Excluir</button>
+                <?php } ?>
             </div>
         </form>
     </main>
@@ -259,6 +309,7 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     
                     atualizarEstado();
                 }
+
             });
 
             const formulario = document.querySelector('form');
@@ -283,6 +334,18 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     evento.preventDefault();
                 }
             });
+
+            // Adiciona a confirmação para o botão de excluir
+            const btnExcluir = document.getElementById('btn-excluir');
+            if (btnExcluir) {
+                btnExcluir.addEventListener('click', function(event) {
+                    if (!confirm('Tem certeza que deseja excluir este cadastro? Esta ação não pode ser desfeita.')) {
+                        event.preventDefault(); // Cancela o envio do formulário se o usuário clicar em "Cancelar"
+                    }
+                });
+            }
+
+
         });
     </script>
 </body>

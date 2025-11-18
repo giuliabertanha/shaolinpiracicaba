@@ -16,33 +16,6 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usuario = $_POST['usuario'];
-    $senha = $_POST['senha'];
-    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-    $nome = $_POST['nome'];
-    $telefone = $_POST['telefone'];
-    $email = $_POST['email'];
-
-    $query_consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
-    $result = $conn->query($query_consulta);
-
-    if ($result->num_rows > 0) {
-        echo "<script>alert('Este nome de usuário já está em uso.');</script>";
-        exit();
-    } else {
-        $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'A', '0')";
-
-        if ($conn->query($query_insert) === TRUE) {
-            // Dados salvos com sucesso
-            echo "<script>alert('Dados salvos com sucesso!');</script>";
-        } else {
-            // Erro ao salvar os dados
-            echo "<script>alert('Erro ao inserir dados: " . $conn->error . "');</script>";
-        }
-    }
-}
-
 // Formatando o nome da modalidade para um nome de tabela válido
 function formatar_nome_tabela($nome) {
     $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
@@ -50,6 +23,102 @@ function formatar_nome_tabela($nome) {
     $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
     $nome_tabela = trim($nome_tabela, '_');
     return $nome_tabela;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_aluno_post = $_POST['id'] ?? null;
+
+    // --- EXCLUSÃO ---
+    if (isset($_POST['excluir']) && !empty($id_aluno_post)) {
+        $conn->begin_transaction();
+        try {
+            // 1. Buscar todas as modalidades para limpar as tabelas dinâmicas
+            $sql_todas_modalidades = "SELECT nome FROM modalidades";
+            $result_todas_modalidades = $conn->query($sql_todas_modalidades);
+
+            if ($result_todas_modalidades) {
+                while ($mod = $result_todas_modalidades->fetch_assoc()) {
+                    $nome_tabela = formatar_nome_tabela($mod['nome']);
+                    $stmt_delete_graduacao = $conn->prepare("DELETE FROM `$nome_tabela` WHERE id_aluno = ?");
+                    if ($stmt_delete_graduacao) {
+                        $stmt_delete_graduacao->bind_param("i", $id_aluno_post);
+                        $stmt_delete_graduacao->execute();
+                        $stmt_delete_graduacao->close();
+                    }
+                }
+            }
+
+            // 2. Excluir registros da tabela de matrículas
+            $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_aluno = ?");
+            $stmt_delete_matriculas->bind_param("i", $id_aluno_post);
+            $stmt_delete_matriculas->execute();
+            $stmt_delete_matriculas->close();
+
+            // 3. Excluir o usuário aluno
+            $stmt_delete_user = $conn->prepare("DELETE FROM usuarios WHERE id = ? AND tipo = 'A'");
+            $stmt_delete_user->bind_param("i", $id_aluno_post);
+            $stmt_delete_user->execute();
+            $stmt_delete_user->close();
+
+            $conn->commit();
+            echo "<script>alert('Aluno excluído com sucesso!'); window.location.href = 'cadastro_alunos.php';</script>";
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo "<script>alert('Erro ao excluir aluno: " . $e->getMessage() . "'); window.history.back();</script>";
+        }
+        $conn->close();
+        exit;
+    }
+}
+
+$id_aluno = null;
+$aluno = [
+    'nome' => '',
+    'usuario' => '',
+    'telefone' => '',
+    'email' => ''
+];
+
+$aluno_modalidades = []; // Armazena as modalidades e graduações do aluno
+
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id_aluno = $_GET['id'];
+    $titulo_pagina = "Cadastro do aluno";
+
+    $stmt = $conn->prepare("SELECT nome, usuario, telefone, email, admin FROM usuarios WHERE id = ? AND tipo = 'A'");
+    $stmt->bind_param("i", $id_aluno);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $aluno = $result->fetch_assoc();
+    } else {
+        echo "<script>alert('Aluno não encontrado!'); window.location.href = 'cadastro_alunos.php';</script>";
+        exit;
+    }
+    $stmt->close();
+}
+
+$sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
+$result_modalidades = $conn->query($sql_modalidades);
+$modalidades_disponiveis = [];
+if ($result_modalidades && $result_modalidades->num_rows > 0) {
+    while($row = $result_modalidades->fetch_assoc()) {
+        $modalidades_disponiveis[] = $row;
+        if ($id_aluno) {
+            $nome_tabela = formatar_nome_tabela($row['nome']);
+            $stmt_graduacao = $conn->prepare("SELECT faixa FROM `$nome_tabela` WHERE id_aluno = ?");
+            if ($stmt_graduacao) {
+                $stmt_graduacao->bind_param("i", $id_aluno);
+                $stmt_graduacao->execute();
+                $graduacao_result = $stmt_graduacao->get_result();
+                if ($graduacao_result->num_rows > 0) {
+                    $aluno_modalidades[$row['id']] = $graduacao_result->fetch_assoc()['faixa'];
+                }
+                $stmt_graduacao->close();
+            }
+        }
+    }
 }
 
 $sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
@@ -75,7 +144,7 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="img/icon.png" type="image/x-icon">
-    <title>Shaolin Piracicaba | Incluir Aluno</title>
+    <title>Shaolin Piracicaba | Cadastro do Aluno</title>
 </head>
 <body>
     <header>
@@ -131,35 +200,36 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
         </nav>
     </header>
     <main class="d-flex flex-column align-items-center">
-		<h2 class="text-uppercase mt-4 mb-3 text-center"><b>Incluir aluno</b></h2>  
-        <form class="w-75" action="incluir_aluno.php" method="POST">
+		<h2 class="text-uppercase mt-4 mb-3 text-center"><b><?php echo $titulo_pagina; ?></b></h2>  
+        <form class="w-75" action="cadastro_aluno.php" method="POST">
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_aluno); ?>">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
-                <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" required>
+                <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($aluno['nome']); ?>" required>
                 <div id="nome-error" class="form-error"></div>
             </div>
             <div class="d-flex flex-direction-row mb-3">
                 <div class="me-2 w-50">
                     <label for="usuario" class="form-label">Usuário</label>
-                    <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" required>
+                    <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" value="<?php echo htmlspecialchars($aluno['usuario']); ?>" required>
                     <div id="usuario-error" class="form-error"></div>
                 </div>
-                <div class="mx-2 w-50">
+                <div class="mx-2" style="width: 30%">
                     <label for="senha" class="form-label">Senha</label>
-                    <input type="password" class="input-field" name="senha" id="senha" minlength="6" maxlength="30" autocomplete="off" required>
+                    <input type="password" class="input-field" name="senha" id="senha" minlength="6" maxlength="30" autocomplete="off" placeholder="<?php echo $id_aluno ? 'Deixe em branco para não alterar' : ''; ?>" <?php if (!$id_aluno) echo 'required'; ?>>
                     <div id="senha-error" class="form-error"></div>
+                </div>
+                <div class="ms-2" style="width: 20%">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input type="text" class="input-field" name="telefone" id="telefone" autocomplete="off" maxlength="15" value="<?php echo htmlspecialchars($aluno['telefone']); ?>" required>
+                    <div id="telefone-error" class="form-error"></div>
                 </div>
             </div>
             <div class="d-flex flex-direction-row mb-3">
-                <div class="me-2 w-50">
+                <div class="me-2" style="width: 88%">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" required>
+                    <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($aluno['email']); ?>" required>
                     <div id="email-error" class="form-error"></div>
-                </div>
-                <div class="ms-2 w-50">
-                    <label for="telefone" class="form-label">Telefone</label>
-                    <input type="text" class="input-field" name="telefone" id="telefone" autocomplete="off" maxlength="15" required>
-                    <div id="telefone-error" class="form-error"></div>
                 </div>
             </div>
             <div class="mb-3">
@@ -194,8 +264,11 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                 <?php } ?>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
-                <button type="submit" id="submit-button" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                <a href="cadastro_professores.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
+                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
+                <a href="cadastro_alunos.php" class="btn text-uppercase w-50 voltar">Voltar</a>
+                <?php if ($id_aluno) { ?>
+                    <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" id="btn-excluir">Excluir</button>
+                <?php } ?>
             </div>
         </form>
     </main>
@@ -230,29 +303,38 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                 }
             });
 
-            //Validação do formulário
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(event) {
-                let isValid = true;
-                let errorMessage = '';
+            const formulario = document.querySelector('form');
+            formulario.addEventListener('submit', function(evento) {
+                let eValido = true;
+                let mensagemErro = '';
 
                 linhasModalidade.forEach(linha => {
                     const caixaSelecao = linha.querySelector('input[type="checkbox"].form-check-input');
                     const botaoDropdown = linha.querySelector('.dropdown-bs-toggle');
                     const nomeModalidade = linha.querySelector('.form-check-label').textContent.trim();
 
-                    //Faixa/estrela não selecionada
+                    // Se a modalidade está marcada, mas a faixa/estrela não foi selecionada (e existe um dropdown)
                     if (caixaSelecao.checked && botaoDropdown && botaoDropdown.textContent.trim() === 'Faixa/Estrela') {
-                        isValid = false;
-                        errorMessage = `Por favor, selecione a Faixa/Estrela para a modalidade "${nomeModalidade}".`;
+                        eValido = false;
+                        mensagemErro = `Por favor, selecione a Faixa/Estrela para a modalidade "${nomeModalidade}".`;
                     }
                 });
 
-                if (!isValid) {
-                    alert(errorMessage);
-                    event.preventDefault();
+                if (!eValido) {
+                    alert(mensagemErro);
+                    evento.preventDefault();
                 }
             });
+
+            // Adiciona a confirmação para o botão de excluir
+            const btnExcluir = document.getElementById('btn-excluir');
+            if (btnExcluir) {
+                btnExcluir.addEventListener('click', function(event) {
+                    if (!confirm('Tem certeza que deseja excluir este cadastro? Esta ação não pode ser desfeita.')) {
+                        event.preventDefault(); // Cancela o envio do formulário se o usuário clicar em "Cancelar"
+                    }
+                });
+            }
         });
     </script>
 </body>

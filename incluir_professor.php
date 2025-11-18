@@ -16,6 +16,15 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
+// Formatando o nome da modalidade para um nome de tabela válido
+function formatar_nome_tabela($nome) {
+    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
+    $nome_minusculo = strtolower($nome_sem_acentos);
+    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
+    $nome_tabela = trim($nome_tabela, '_');
+    return $nome_tabela;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $usuario = $_POST['usuario'];
         $senha = $_POST['senha'];
@@ -42,6 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+$sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
+$result_modalidades = $conn->query($sql_modalidades);
+$modalidades_disponiveis = [];
+if ($result_modalidades && $result_modalidades->num_rows > 0) {
+    while($row = $result_modalidades->fetch_assoc()) {
+        $stmt_graduacoes = $conn->prepare("SELECT nome FROM graduacoes WHERE id_modalidade = ? ORDER BY ordem");
+        $stmt_graduacoes->bind_param("i", $row['id']);
+        $stmt_graduacoes->execute();
+        $modalidades_disponiveis[] = ['modalidade' => $row, 'graduacoes' => $stmt_graduacoes->get_result()->fetch_all(MYSQLI_ASSOC)];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -150,86 +170,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="modalidades" class="form-label">Modalidades</label>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">    
+                <?php foreach ($modalidades_disponiveis as $item) {
+                    $id_modalidade = $item['modalidade']['id'];
+                    $nome_modalidade = htmlspecialchars($item['modalidade']['nome']);
+                    $graduacoes = $item['graduacoes'];
+                ?>
+                <div class="d-flex flex-row w-100 justify-content-between my-2">
                     <div class="form-check">
                         <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="" id="">
-                        Shaolin do Norte
+                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1">
+                            <?php echo $nome_modalidade; ?>
                         </label>
                     </div>
+                    
+                    <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
+                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="">
                         <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Faixa/Estrela
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Faixa Branca</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Amarela</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Azul</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Verde</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Vermelha</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Preta</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Azul</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Cinza</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Preta</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Azul Yin Yang</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Cinza Yin Yang</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Preta Yin Yang</a></li>
+                            <?php foreach ($graduacoes as $graduacao) { ?>
+                            <li><a class="dropdown-item" href="#"><?php echo htmlspecialchars($graduacao['nome']); ?></a></li>
+                            <?php } ?>
                         </ul>
                     </div>
+                    <?php } ?>
                 </div>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">    
-                    <div class="form-check">
-                        <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="" id="">
-                        Shaolin Kids
-                        </label>
-                    </div>
-                    <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
-                            Faixa
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Faixa Branca Risco Preto</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Laranja</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Amarela com Risco Preto</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Roxa</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Azul Risco Preto</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Marrom</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Verde Risco Preto</a></li>
-                            <li><a class="dropdown-item" href="#">Faixa Verde</a></li>
-                            
-                        </ul>
-                    </div>
-                </div>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">    
-                    <div class="form-check">
-                        <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="" id="">
-                        Sanda - Boxe Chinês
-                        </label>
-                    </div>
-                    <div class="dropdown">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
-                            Estrela
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Estrela com Contorno Prata e o Centro Preto</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela com Contorno Prata e o Centro Vermelho</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Prata</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela com Contorno Dourado e o Centro Preto</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Dourada com o Centro Vermelho</a></li>
-                            <li><a class="dropdown-item" href="#">Estrela Dourada</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">    
-                    <div class="form-check">
-                        <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="" id="">
-                        Tai Chi Chuan
-                        </label>
-                    </div>
-                </div>
+                <?php } ?>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
                 <button type="submit" id="submit-button" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
@@ -242,24 +210,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             //Habilita o dropdown de faixa/estrela apenas se a modalidade for selecionada
-            const modalityRows = document.querySelectorAll('.mb-3 .d-flex.flex-row.w-100.justify-content-between.my-2');
+            const linhasModalidade = document.querySelectorAll('.mb-3 .d-flex.flex-row.w-100.justify-content-between.my-2');
 
-            modalityRows.forEach(row => {
-                const checkbox = row.querySelector('input[type="checkbox"].form-check-input');
-                const dropdownButton = row.querySelector('.dropdown-bs-toggle');
+            linhasModalidade.forEach(linha => {
+                const caixaSelecao = linha.querySelector('input[type="checkbox"].form-check-input');
+                const botaoDropdown = linha.querySelector('.dropdown-bs-toggle');
+                const inputOculto = linha.querySelector('input[type="hidden"]');
 
-                if (checkbox && dropdownButton) {
-                    const originalButtonText = dropdownButton.textContent.trim();
+                if (caixaSelecao && botaoDropdown) {
+                    const textoOriginalBotao = 'Faixa/Estrela';
  
-                    dropdownButton.disabled = !checkbox.checked;
-
-                    checkbox.addEventListener('change', function() {
-                        dropdownButton.disabled = !this.checked;
-                        if (!this.checked) {
-                            // Se desmarcado, restaura o texto original do botão
-                            dropdownButton.textContent = originalButtonText;
+                    const atualizarEstado = () => {
+                        botaoDropdown.disabled = !caixaSelecao.checked;
+                        if (!caixaSelecao.checked) {
+                            botaoDropdown.textContent = textoOriginalBotao;
+                            if (inputOculto) {
+                                inputOculto.value = '';
+                            }
                         }
-                    });
+                    };
+
+                    caixaSelecao.addEventListener('change', atualizarEstado);
+                    
+                    atualizarEstado();
                 }
             });
 
@@ -269,15 +242,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 let isValid = true;
                 let errorMessage = '';
 
-                modalityRows.forEach(row => {
-                    const checkbox = row.querySelector('input[type="checkbox"].form-check-input');
-                    const dropdownButton = row.querySelector('.dropdown-bs-toggle');
-                    const modalityName = row.querySelector('.form-check-label').textContent.trim();
+                linhasModalidade.forEach(linha => {
+                    const caixaSelecao = linha.querySelector('input[type="checkbox"].form-check-input');
+                    const botaoDropdown = linha.querySelector('.dropdown-bs-toggle');
+                    const nomeModalidade = linha.querySelector('.form-check-label').textContent.trim();
 
                     //Faixa/estrela não selecionada
-                    if (checkbox.checked && dropdownButton.textContent.trim() === 'Faixa/Estrela') {
+                    if (caixaSelecao.checked && botaoDropdown && botaoDropdown.textContent.trim() === 'Faixa/Estrela') {
                         isValid = false;
-                        errorMessage = `Por favor, selecione a Faixa/Estrela para a modalidade "${modalityName}".`;
+                        errorMessage = `Por favor, selecione a Faixa/Estrela para a modalidade "${nomeModalidade}".`;
                     }
                 });
 

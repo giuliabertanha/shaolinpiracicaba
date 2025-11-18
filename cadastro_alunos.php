@@ -16,20 +16,15 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-$sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome AS 'Modalidade'
-        FROM usuarios
-        INNER JOIN modA ON usuarios.id = modA.id_aluno
-        INNER JOIN modalidades ON modA.id_mod = modalidades.id
-        WHERE usuarios.tipo = 'A'
-        UNION
-        SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome AS 'Modalidade'
-        FROM usuarios
-        INNER JOIN modB ON usuarios.id = modB.id_aluno
-        INNER JOIN modalidades ON modB.id_mod = modalidades.id
-        WHERE usuarios.tipo = 'A'
-        ORDER BY Aluno, Modalidade;"; 
+$sql = "SELECT
+            usuarios.id AS 'id', 
+            usuarios.nome AS 'Nome', 
+	        GROUP_CONCAT(modalidades.nome SEPARATOR ', ') AS 'Modalidade' 
+        FROM matriculas 
+            INNER JOIN usuarios ON (usuarios.id=matriculas.id_aluno)
+            INNER JOIN modalidades ON (modalidades.id=matriculas.id_modalidade) 
+            GROUP BY usuarios.id;";
     $result = $conn->query($sql);
-
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +96,6 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
         <table class="table table-striped w-75">
           <thead>
             <tr>
-              <th scope="col"></th>
               <th scope="col">Nome</th>
               <th scope="col">Modalidade</th>
             </tr>
@@ -110,9 +104,9 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
               <?php
                 if ($result->num_rows > 0) {
                     while($row = $result->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<th scope='row'>" . $row["id"] . "</th>";
-                        echo "<td>" . htmlspecialchars($row["Aluno"]) . "</td>";
+                        $link = "cadastro_aluno.php?id=" . $row["id"];
+                        echo "<tr class='linha-clicavel' data-href='" . $link . "'>";
+                        echo "<td>" . htmlspecialchars($row["Nome"]) . "</td>";
                         echo "<td>" . htmlspecialchars($row["Modalidade"]) . "</td>";
                         echo "</tr>";
                     }
@@ -129,6 +123,22 @@ $sql = "SELECT usuarios.id AS 'id', usuarios.nome AS 'Aluno', modalidades.nome A
         </div>
     </main>
     </main>
+    <style>
+        .linha-clicavel {
+            cursor: pointer;
+        }
+    </style>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const rows = document.querySelectorAll("tr[data-href]");
+
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+    </script>
 </body>
 </html>
