@@ -21,8 +21,9 @@ $sql = "SELECT
             usuarios.nome AS 'Nome', 
 	        GROUP_CONCAT(modalidades.nome SEPARATOR ', ') AS 'Modalidade' 
         FROM matriculas 
-            INNER JOIN usuarios ON (usuarios.id=matriculas.id_aluno)
+            INNER JOIN usuarios ON (usuarios.id=matriculas.id_usuario)
             INNER JOIN modalidades ON (modalidades.id=matriculas.id_modalidade) 
+            WHERE usuarios.tipo = 'A'
             GROUP BY usuarios.id;";
     $result = $conn->query($sql);
 ?>
