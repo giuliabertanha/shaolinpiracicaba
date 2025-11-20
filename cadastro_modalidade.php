@@ -15,35 +15,17 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     header("Location: login.php");
     exit();
 }
-//Formatando o nome da modalidade e criar um nome de tabela válido
-function formatar_nome_tabela($nome, $conn) {
-    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    $nome_minusculo = strtolower($nome_sem_acentos);
-    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    $nome_tabela = trim($nome_tabela, '_');
-    return mysqli_real_escape_string($conn, $nome_tabela);
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_modalidade_post = $_POST['id'] ?? null;
 
     //DELETE
     if (isset($_POST['excluir']) && !empty($id_modalidade_post)) {
-        //Busca o nome da modalidade para saber qual tabela apagar
-        $stmt_get_nome = $conn->prepare("SELECT nome FROM modalidades WHERE id = ?");
-        $stmt_get_nome->bind_param("i", $id_modalidade_post);
-        $stmt_get_nome->execute();
-        $nome_modalidade = $stmt_get_nome->get_result()->fetch_assoc()['nome'];
-        $stmt_get_nome->close();
-
         //Deleta o registro da modalidade
         $stmt = $conn->prepare("DELETE FROM modalidades WHERE id = ?");
         $stmt->bind_param("i", $id_modalidade_post);
         if ($stmt->execute()) {
-            //Se teve sucesso, apaga a tabela correspondente
-            $nome_tabela = formatar_nome_tabela($nome_modalidade, $conn);
-            $conn->query("DROP TABLE IF EXISTS `$nome_tabela`");
-            echo "<script>alert('Modalidade e todos os registros de alunos vinculados foram excluídos com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
+            echo "<script>alert('Modalidade excluída com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
         } else {
             echo "<script>alert('Erro ao excluir modalidade: " . $stmt->error . "'); window.location.href = 'cadastro_modalidades.php';</script>";
         }
@@ -68,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_professor4 = isset($professores_selecionados[3]) ? (int)$professores_selecionados[3] : null;
 
     if (!empty($id_modalidade_post)) {
-        // UPDATE
         $stmt = $conn->prepare("UPDATE modalidades SET nome = ?, id_professor1 = ?, id_professor2 = ?, id_professor3 = ?, id_professor4 = ? WHERE id = ?");
         $stmt->bind_param("siiiii", $nome, $id_professor1, $id_professor2, $id_professor3, $id_professor4, $id_modalidade_post);
     } 
@@ -78,13 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Atualizar faixas/graduações
         if (!empty($id_modalidade_post)) {
-            // 1. Deletar graduações antigas
             $stmt_delete_faixas = $conn->prepare("DELETE FROM graduacoes WHERE id_modalidade = ?");
             $stmt_delete_faixas->bind_param("i", $id_modalidade_post);
             $stmt_delete_faixas->execute();
             $stmt_delete_faixas->close();
 
-            // 2. Inserir as novas graduações
             $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
             $ordem = 1;
             foreach ($faixas as $faixa_nome) {
