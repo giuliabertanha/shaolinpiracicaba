@@ -16,14 +16,42 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-$sql_a = "SELECT usuarios.nome AS 'Aluno', modA.faixa AS 'Faixa' FROM modA INNER JOIN usuarios ON usuarios.id = modA.id_aluno WHERE usuarios.tipo='A';"; 
-$sql_b = "SELECT usuarios.nome AS 'Aluno', modB.faixa AS 'Faixa' FROM modB INNER JOIN usuarios ON usuarios.id = modB.id_aluno WHERE usuarios.tipo='A';"; 
-$sql_c = "SELECT usuarios.nome AS 'Aluno', modC.faixa AS 'Faixa' FROM modC INNER JOIN usuarios ON usuarios.id = modC.id_aluno WHERE usuarios.tipo='A';"; 
-    
-$result_a = $conn->query($sql_a);
-$result_b = $conn->query($sql_b);
-$result_c = $conn->query($sql_c);
+$sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
+$result_modalidades = $conn->query($sql_modalidades);
 
+$alunos_da_modalidade = [];
+$nome_modalidade_selecionada = '';
+$id_modalidade_selecionada = $_GET['modalidade_id'] ?? null;
+
+if ($id_modalidade_selecionada) {
+    $stmt_nome = $conn->prepare("SELECT nome FROM modalidades WHERE id = ?");
+    $stmt_nome->bind_param("i", $id_modalidade_selecionada);
+    $stmt_nome->execute();
+    $result_nome = $stmt_nome->get_result();
+    if ($row_nome = $result_nome->fetch_assoc()) {
+        $nome_modalidade_selecionada = $row_nome['nome'];
+    }
+    $stmt_nome->close();
+    
+    if ($nome_modalidade_selecionada) {
+        $stmt = $conn->prepare(
+            "SELECT usuarios.id as 'id_aluno', usuarios.nome as 'aluno_nome', graduacoes.nome as 'graduacao_nome' 
+             FROM matriculas 
+             INNER JOIN usuarios ON usuarios.id = matriculas.id_usuario 
+             INNER JOIN graduacoes ON graduacoes.id = matriculas.id_graduacao 
+             WHERE matriculas.id_modalidade = ? AND usuarios.tipo = 'A'
+             ORDER BY usuarios.nome"
+        );
+        $stmt->bind_param("i", $id_modalidade_selecionada);
+        $stmt->execute();
+        $result_alunos = $stmt->get_result();
+
+        if ($result_alunos->num_rows > 0) {
+            $alunos_da_modalidade = $result_alunos->fetch_all(MYSQLI_ASSOC);
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -92,72 +120,46 @@ $result_c = $conn->query($sql_c);
     </header>
     <main class="d-flex flex-column align-items-center">
 		<h2 class="text-uppercase mt-4 mb-3 text-center"><b>Alunos por modalidade</b></h2>  
-        <div class="d-flex w-75">
-        <table class="table table-striped m-4 rounded">
-          <thead>
-            <tr>
-              <th scope="col" colspan='2'>Modalidade A</th>
-            </tr>
-          </thead>
-          <tbody>
-              <?php
-                if ($result_a->num_rows > 0) {
-                    while($row = $result_a->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td><a href='#'>" . htmlspecialchars($row["Aluno"]) . "</a></td>";
-                        echo "<td class='w-25'>" . htmlspecialchars($row["Faixa"]) . "</td>";
-                        echo "</tr>";
+        <div class="w-75">
+            <form action="alunos_por_modalidade.php" method="GET" class="d-flex mb-4 align-items-center">
+                <select name="modalidade_id" class="form-select me-2" required>
+                    <option value="">Selecione uma modalidade</option>
+                    <?php
+                    if ($result_modalidades && $result_modalidades->num_rows > 0) {
+                        $result_modalidades->data_seek(0); // Reinicia o ponteiro do resultado
+                        while ($modalidade = $result_modalidades->fetch_assoc()) {
+                            $selected = ($id_modalidade_selecionada == $modalidade['id']) ? 'selected' : '';
+                            echo '<option value="' . $modalidade['id'] . '" ' . $selected . '>' . htmlspecialchars($modalidade['nome']) . '</option>';
+                        }
                     }
-                } else {
-                    echo "<tr><td colspan='2'>0 resultados</td></tr>";
-                }
-                ?>
-          </tbody>
-        </table>
-        <table class="table table-striped m-4">
-          <thead>
-            <tr>
-              <th scope="col" colspan='2'>Modalidade B</th>
-            </tr>
-          </thead>
-          <tbody>
-              <?php
-                if ($result_b->num_rows > 0) {
-                    while($row = $result_b->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td><a href='#'>" . htmlspecialchars($row["Aluno"]) . "</a></td>";
-                        echo "<td class='w-25'>" . htmlspecialchars($row["Faixa"]) . "</td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='2'>0 resultados</td></tr>";
-                }
-                ?>
-          </tbody>
-        </table>
-        <table class="table table-striped m-4">
-          <thead>
-            <tr>
-              <th scope="col" colspan='2'>Modalidade C</th>
-            </tr>
-          </thead>
-          <tbody>
-              <?php
-                if ($result_c->num_rows > 0) {
-                    while($row = $result_c->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td><a href='#'>" . htmlspecialchars($row["Aluno"]) . "</a></td>";
-                        echo "<td class='w-25'>" . htmlspecialchars($row["Faixa"]) . "</td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='2'>0 resultados</td></tr>";
-                }
-                ?>
-          </tbody>
-        </table>
+                    ?>
+                </select>
+                <button type="submit" class="btn btn_verde" style="white-space: nowrap;">Gerar Relatório</button>
+            </form>
+
+            <?php if ($id_modalidade_selecionada) { ?>
+                <table class="table table-striped rounded">
+                    <thead>
+                        <tr>
+                            <th scope="col" colspan="2"><?php echo htmlspecialchars($nome_modalidade_selecionada); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($alunos_da_modalidade)) { ?>
+                            <?php foreach ($alunos_da_modalidade as $aluno) { ?>
+                                <tr>
+                                    <td><a href="cadastro_aluno.php?id=<?php echo $aluno['id_aluno']; ?>"><?php echo htmlspecialchars($aluno['aluno_nome']); ?></a></td>
+                                    <td style="width: 35%;"><?php echo htmlspecialchars($aluno['graduacao_nome']); ?></td>
+                                </tr>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <tr><td colspan="2" class="text-center">Nenhum aluno encontrado para esta modalidade.</td></tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            <?php } ?>
         </div>
-        <a class="btn text-uppercase w-75 me-0 voltar" href="area_professor.php">Voltar</a>
+        <a class="btn text-uppercase w-75 btn_verde" href="area_professor.php">Voltar</a>
     </main>
     <script src="js/bootstrap.bundle.min.js"></script>
 </body>
