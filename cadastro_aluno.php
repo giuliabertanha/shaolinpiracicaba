@@ -43,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // --- ATUALIZAÇÃO (SALVAR) ---
     if (isset($_POST['id']) && !empty($_POST['id']) && !isset($_POST['excluir'])) {
         $id_aluno_update = $_POST['id'];
         $nome = $_POST['nome'];
@@ -55,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->begin_transaction();
         try {
-            // 1. Atualiza dados básicos do usuário
             if (!empty($senha)) {
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
                 $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ? WHERE id = ?");
@@ -67,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_update_user->execute();
             $stmt_update_user->close();
 
-            // 2. Limpa matrículas antigas e insere as novas
             $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_usuario = ?");
             $stmt_delete_matriculas->bind_param("i", $id_aluno_update);
             $stmt_delete_matriculas->execute();

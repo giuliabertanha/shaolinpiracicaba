@@ -11,7 +11,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
     header("Location: login.php");
     exit();
 }
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $admin = isset($_POST['admin']) ? 1 : 0;
     $modalidades_selecionadas = $_POST['modalidades'] ?? [];
 
-    // Verifica se o usuário já existe
+    //Verifica se o usuário já existe
     $stmt_check = $conn->prepare("SELECT id FROM usuarios WHERE usuario = ?");
     $stmt_check->bind_param("s", $usuario);
     $stmt_check->execute();
@@ -51,11 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Insere as matrículas
         foreach ($modalidades_selecionadas as $id_modalidade => $dados) {
-            // Se a modalidade foi selecionada e uma graduação foi escolhida
             if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
                 $nome_graduacao = trim($dados['graduacao']);
 
-                // Busca o ID da graduação pelo nome
                 $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
                 $stmt_grad->bind_param("si", $nome_graduacao, $id_modalidade);
                 $stmt_grad->execute();
@@ -68,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_matricula->execute();
                     $stmt_matricula->close();
 
-                    // Associa o professor a um slot vago na modalidade
                     $stmt_find_slot = $conn->prepare("SELECT id_professor1, id_professor2, id_professor3, id_professor4 FROM modalidades WHERE id = ?");
                     $stmt_find_slot->bind_param("i", $id_modalidade);
                     $stmt_find_slot->execute();
@@ -89,7 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt_update_mod->execute();
                         $stmt_update_mod->close();
                     } else {
-                        // Se não houver slot, lança uma exceção para reverter a transação
                         throw new Exception("A modalidade selecionada já possui o número máximo de 4 professores.");
                     }
                 }

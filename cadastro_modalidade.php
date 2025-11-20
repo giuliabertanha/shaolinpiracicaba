@@ -11,7 +11,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
     header("Location: login.php");
     exit();
 }
@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //DELETE
     if (isset($_POST['excluir']) && !empty($id_modalidade_post)) {
-        //Deleta o registro da modalidade
         $stmt = $conn->prepare("DELETE FROM modalidades WHERE id = ?");
         $stmt->bind_param("i", $id_modalidade_post);
         if ($stmt->execute()) {
@@ -57,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $novo_id = !empty($id_modalidade_post) ? $id_modalidade_post : $conn->insert_id;
 
-        // Atualizar faixas/graduações
+        //Atualizando faixas/graduações
         if (!empty($id_modalidade_post)) {
             $stmt_delete_faixas = $conn->prepare("DELETE FROM graduacoes WHERE id_modalidade = ?");
             $stmt_delete_faixas->bind_param("i", $id_modalidade_post);
@@ -115,7 +114,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
     $stmt->close();
 
-    // Buscar as graduações existentes para esta modalidade
     $stmt_faixas = $conn->prepare("SELECT nome FROM graduacoes WHERE id_modalidade = ? ORDER BY ordem");
     $stmt_faixas->bind_param("i", $id_modalidade);
     $stmt_faixas->execute();
@@ -251,24 +249,21 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             if (btnExcluir) {
                 btnExcluir.addEventListener('click', function(event) {
                     if (!confirm('Tem certeza que deseja excluir esta modalidade? \n\nATENÇÃO: Todos os registros de alunos matriculados nesta modalidade serão permanentemente apagados. Esta ação não pode ser desfeita.')) {
-                        event.preventDefault(); // Cancela o envio do formulário se o usuário clicar em "Cancelar"
+                        event.preventDefault();
                     }
                 });
             }
 
             const faixasContainer = document.getElementById('faixas-container');
 
-            // Função para adicionar o evento de remoção
             const addRemoveEvent = (button) => {
                 button.addEventListener('click', function() {
                     this.parentElement.remove();
                 });
             };
 
-            // Adiciona evento aos botões de remover já existentes
             faixasContainer.querySelectorAll('.remove-faixa').forEach(addRemoveEvent);
 
-            // Se não houver faixas, adiciona um campo vazio
             if (faixasContainer.children.length === 0) {
                 document.getElementById('add-faixa').click();
             }

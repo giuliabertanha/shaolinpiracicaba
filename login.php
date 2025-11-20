@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
     if (empty($usuario_post) || empty($senha_post)) {
         $error_message = 'Por favor, preencha todos os campos.';
     } else {
-        $stmt = $conn->prepare("SELECT id, usuario, senha, tipo FROM usuarios WHERE usuario = ? LIMIT 1");
+        $stmt = $conn->prepare("SELECT id, usuario, senha, tipo, admin FROM usuarios WHERE usuario = ? LIMIT 1");
         $stmt->bind_param("s", $usuario_post);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
             if (password_verify($senha_post, $user['senha'])) {
                 $_SESSION['usuario'] = $user['usuario'];
                 $_SESSION['tipo'] = $user['tipo'];
+                $_SESSION['admin'] = $user['admin'];
                 if ($user['tipo'] == 'A') {
                     header("Location: area_aluno.php");
                 } elseif ($user['tipo'] == 'P') {

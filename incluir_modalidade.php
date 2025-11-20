@@ -11,19 +11,9 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
     header("Location: login.php");
     exit();
-}
-
-//Formatando o nome da modalidade e criar um nome de tabela válido
-function formatar_nome_tabela($nome, $conn) {
-    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    // Converte para minúsculas
-    $nome_minusculo = strtolower($nome_sem_acentos);
-    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    $nome_tabela = trim($nome_tabela, '_');
-    return mysqli_real_escape_string($conn, $nome_tabela);
 }
 
 $sql_professores = "SELECT id, nome FROM usuarios WHERE tipo = 'P' ORDER BY nome";
@@ -34,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $professores_selecionados = $_POST['professores'] ?? [];
     $faixas = $_POST['faixas'] ?? [];
 
-    // Validação do número de professores
     if (count($professores_selecionados) > 4) {
         echo "<script>alert('Você só pode selecionar no máximo 4 professores.'); window.history.back();</script>";
         exit;
@@ -45,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_professor3 = isset($professores_selecionados[2]) ? (int)$professores_selecionados[2] : null;
     $id_professor4 = isset($professores_selecionados[3]) ? (int)$professores_selecionados[3] : null;
 
-    //Verifica se já existe uma modalidade com o mesmo nome
     $stmt_check = $conn->prepare("SELECT id FROM modalidades WHERE nome = ?");
     $stmt_check->bind_param("s", $nome);
     $stmt_check->execute();
@@ -64,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $novo_id = $conn->insert_id;
 
-        // Inserir as faixas/estrelas na tabela 'graduacoes'
+        //Inserindo as faixas/estrelas na tabela graduacoe
         if (!empty($faixas)) {
             $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
             $ordem = 1;
@@ -211,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCheckboxState));
-            updateCheckboxState(); // Executa ao carregar a página
+            updateCheckboxState();
 
             //Adiciona campos de faixa/estrela dinamicamente
             document.getElementById('add-faixa').addEventListener('click', function() {

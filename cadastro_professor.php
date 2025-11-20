@@ -11,7 +11,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
     header("Location: login.php");
     exit();
 }
@@ -19,11 +19,9 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_professor_post = $_POST['id'] ?? null;
 
-    // --- EXCLUSÃO ---
     if (isset($_POST['excluir']) && !empty($id_professor_post)) {
         $conn->begin_transaction();
         try {
-            // 1. Desassociar professor das modalidades
             $stmt_update_mod1 = $conn->prepare("UPDATE modalidades SET id_professor1 = NULL WHERE id_professor1 = ?");
             $stmt_update_mod1->bind_param("i", $id_professor_post);
             $stmt_update_mod1->execute();
@@ -44,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_update_mod4->execute();
             $stmt_update_mod4->close();
 
-            // 2. Excluir o usuário professor
             $stmt_delete_user = $conn->prepare("DELETE FROM usuarios WHERE id = ? AND tipo = 'P'");
             $stmt_delete_user->bind_param("i", $id_professor_post);
             $stmt_delete_user->execute();
@@ -60,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // --- ATUALIZAÇÃO (SALVAR) ---
     if (isset($_POST['id']) && !empty($_POST['id']) && !isset($_POST['excluir'])) {
         $id_professor_update = $_POST['id'];
         $nome = $_POST['nome'];
@@ -73,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $conn->begin_transaction();
         try {
-            // 1. Atualiza dados básicos do usuário
             if (!empty($senha)) {
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
                 $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ?, admin = ? WHERE id = ?");
@@ -85,8 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_update_user->execute();
             $stmt_update_user->close();
 
-            // 2. Gerencia matrículas e associação com modalidades
-            // Pega as modalidades atuais do professor
             $stmt_mod_atuais = $conn->prepare("SELECT id FROM modalidades WHERE id_professor1 = ? OR id_professor2 = ? OR id_professor3 = ? OR id_professor4 = ?");
             $stmt_mod_atuais->bind_param("iiii", $id_professor_update, $id_professor_update, $id_professor_update, $id_professor_update);
             $stmt_mod_atuais->execute();
@@ -99,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $modalidades_selecionadas_ids = array_keys($modalidades_post);
 
-            // Desassocia das modalidades que foram desmarcadas
             $modalidades_para_remover = array_diff($modalidades_atuais_ids, $modalidades_selecionadas_ids);
             foreach ($modalidades_para_remover as $id_mod_remover) {
                 for ($i = 1; $i <= 4; $i++) {
@@ -110,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Limpa matrículas antigas e insere as novas
             $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_usuario = ?");
             $stmt_delete_matriculas->bind_param("i", $id_professor_update);
             $stmt_delete_matriculas->execute();
@@ -118,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             foreach ($modalidades_post as $id_modalidade => $dados) {
                 if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
-                    // Insere nova matrícula
                     $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
                     $stmt_grad->bind_param("si", $dados['graduacao'], $id_modalidade);
                     $stmt_grad->execute();
@@ -132,7 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     $stmt_grad->close();
 
-                    // Associa à modalidade se for uma nova associação
                     if (!in_array($id_modalidade, $modalidades_atuais_ids)) {
                         $slot_vago = null;
                         for ($i = 1; $i <= 4; $i++) {
@@ -173,8 +162,8 @@ $professor = [
     'admin' => ''
 ];
 
-$professor_modalidades = []; // Armazena as modalidades que o professor leciona
-$professor_graduacoes = []; // Armazena as graduações do professor
+$professor_modalidades = [];
+$professor_graduacoes = [];
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_professor = $_GET['id'];
@@ -192,7 +181,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
     $stmt->close();
 
-    // Buscar modalidades que o professor leciona
     $stmt_mod_prof = $conn->prepare("SELECT id FROM modalidades WHERE id_professor1 = ? OR id_professor2 = ? OR id_professor3 = ? OR id_professor4 = ?");
     $stmt_mod_prof->bind_param("iiii", $id_professor, $id_professor, $id_professor, $id_professor);
     $stmt_mod_prof->execute();
@@ -202,7 +190,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
     $stmt_mod_prof->close();
 
-    // Buscar graduações do professor
     $stmt_grad_prof = $conn->prepare(
         "SELECT matriculas.id_modalidade, graduacoes.nome AS graduacao_nome 
          FROM matriculas 
@@ -438,7 +425,7 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
             if (btnExcluir) {
                 btnExcluir.addEventListener('click', function(event) {
                     if (!confirm('Tem certeza que deseja excluir este cadastro? Esta ação não pode ser desfeita.')) {
-                        event.preventDefault(); // Cancela o envio do formulário se o usuário clicar em "Cancelar"
+                        event.preventDefault();
                     }
                 });
             }

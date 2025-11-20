@@ -11,7 +11,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
+if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
     header("Location: login.php");
     exit();
 }
