@@ -16,40 +16,94 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-// Formatando o nome da modalidade para um nome de tabela válido
-function formatar_nome_tabela($nome) {
-    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    $nome_minusculo = strtolower($nome_sem_acentos);
-    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    $nome_tabela = trim($nome_tabela, '_');
-    return $nome_tabela;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $usuario = $_POST['usuario'];
-        $senha = $_POST['senha'];
-        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-        $nome = $_POST['nome'];
-        $telefone = $_POST['telefone'];
-        $email = $_POST['email'];
-        $admin = isset($_POST['admin']) ? 1 : 0;
+    $usuario = $_POST['usuario'];
+    $senha = $_POST['senha'];
+    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+    $nome = $_POST['nome'];
+    $telefone = $_POST['telefone'];
+    $email = $_POST['email'];
+    $admin = isset($_POST['admin']) ? 1 : 0;
+    $modalidades_selecionadas = $_POST['modalidades'] ?? [];
 
-        $query_consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
-        $result = $conn->query($query_consulta);
+    // Verifica se o usuário já existe
+    $stmt_check = $conn->prepare("SELECT id FROM usuarios WHERE usuario = ?");
+    $stmt_check->bind_param("s", $usuario);
+    $stmt_check->execute();
+    $stmt_check->store_result();
 
-        if ($result->num_rows > 0) {
-            echo "<script>alert('Este nome de usuário já está em uso.');</script>";
-            exit();
-        } else {
-            $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'P', '$admin')";
+    if ($stmt_check->num_rows > 0) {
+        echo "<script>alert('Este nome de usuário já está em uso.'); window.history.back();</script>";
+        $stmt_check->close();
+        exit;
+    }
+    $stmt_check->close();
 
-            if ($conn->query($query_insert) === TRUE) {
-                echo "<script>alert('Dados salvos com sucesso!');</script>";
-            } else {
-                echo "<script>alert('Erro ao inserir dados: " . $conn->error . "');</script>";
+    $conn->begin_transaction();
+
+    try {
+        // Insere o novo professor
+        $stmt_insert = $conn->prepare("INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES (?, ?, ?, ?, ?, 'P', ?)");
+        $stmt_insert->bind_param("sssssi", $usuario, $senha_hash, $nome, $telefone, $email, $admin);
+        $stmt_insert->execute();
+        $id_novo_professor = $conn->insert_id;
+        $stmt_insert->close();
+
+        // Insere as matrículas
+        foreach ($modalidades_selecionadas as $id_modalidade => $dados) {
+            // Se a modalidade foi selecionada e uma graduação foi escolhida
+            if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
+                $nome_graduacao = trim($dados['graduacao']);
+
+                // Busca o ID da graduação pelo nome
+                $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
+                $stmt_grad->bind_param("si", $nome_graduacao, $id_modalidade);
+                $stmt_grad->execute();
+                $result_grad = $stmt_grad->get_result();
+
+                if ($grad_row = $result_grad->fetch_assoc()) {
+                    $id_graduacao = $grad_row['id'];
+                    $stmt_matricula = $conn->prepare("INSERT INTO matriculas (id_usuario, id_modalidade, id_graduacao) VALUES (?, ?, ?)");
+                    $stmt_matricula->bind_param("iii", $id_novo_professor, $id_modalidade, $id_graduacao);
+                    $stmt_matricula->execute();
+                    $stmt_matricula->close();
+
+                    // Associa o professor a um slot vago na modalidade
+                    $stmt_find_slot = $conn->prepare("SELECT id_professor1, id_professor2, id_professor3, id_professor4 FROM modalidades WHERE id = ?");
+                    $stmt_find_slot->bind_param("i", $id_modalidade);
+                    $stmt_find_slot->execute();
+                    $professores_modalidade = $stmt_find_slot->get_result()->fetch_assoc();
+                    $stmt_find_slot->close();
+
+                    $slot_vago = null;
+                    for ($i = 1; $i <= 4; $i++) {
+                        if (is_null($professores_modalidade['id_professor' . $i])) {
+                            $slot_vago = 'id_professor' . $i;
+                            break;
+                        }
+                    }
+
+                    if ($slot_vago) {
+                        $stmt_update_mod = $conn->prepare("UPDATE modalidades SET $slot_vago = ? WHERE id = ?");
+                        $stmt_update_mod->bind_param("ii", $id_novo_professor, $id_modalidade);
+                        $stmt_update_mod->execute();
+                        $stmt_update_mod->close();
+                    } else {
+                        // Se não houver slot, lança uma exceção para reverter a transação
+                        throw new Exception("A modalidade selecionada já possui o número máximo de 4 professores.");
+                    }
+                }
+                $stmt_grad->close();
             }
         }
+        $conn->commit();
+        echo "<script>alert('Professor cadastrado com sucesso!'); window.location.href = 'cadastro_professores.php';</script>";
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo "<script>alert('Erro ao cadastrar professor: " . $e->getMessage() . "'); window.history.back();</script>";
     }
+    exit;
+}
 
 $sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
 $result_modalidades = $conn->query($sql_modalidades);
@@ -231,7 +285,20 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     };
 
                     caixaSelecao.addEventListener('change', atualizarEstado);
-                    
+
+                    // Atualiza o botão e o input hidden com a graduação selecionada
+                    const dropdownItems = linha.querySelectorAll('.dropdown-item');
+                    dropdownItems.forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const nomeGraduacao = this.textContent;
+                            if (botaoDropdown && inputOculto) {
+                                botaoDropdown.textContent = nomeGraduacao;
+                                inputOculto.value = nomeGraduacao;
+                            }
+                        });
+                    });
+
                     atualizarEstado();
                 }
             });

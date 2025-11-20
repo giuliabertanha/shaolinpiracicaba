@@ -16,45 +16,18 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-// Formatando o nome da modalidade para um nome de tabela válido
-function formatar_nome_tabela($nome) {
-    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    $nome_minusculo = strtolower($nome_sem_acentos);
-    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    $nome_tabela = trim($nome_tabela, '_');
-    return $nome_tabela;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_aluno_post = $_POST['id'] ?? null;
 
-    // --- EXCLUSÃO ---
+    //EXCLUSÃO
     if (isset($_POST['excluir']) && !empty($id_aluno_post)) {
         $conn->begin_transaction();
         try {
-            // 1. Buscar todas as modalidades para limpar as tabelas dinâmicas
-            $sql_todas_modalidades = "SELECT nome FROM modalidades";
-            $result_todas_modalidades = $conn->query($sql_todas_modalidades);
-
-            if ($result_todas_modalidades) {
-                while ($mod = $result_todas_modalidades->fetch_assoc()) {
-                    $nome_tabela = formatar_nome_tabela($mod['nome']);
-                    $stmt_delete_graduacao = $conn->prepare("DELETE FROM `$nome_tabela` WHERE id_aluno = ?");
-                    if ($stmt_delete_graduacao) {
-                        $stmt_delete_graduacao->bind_param("i", $id_aluno_post);
-                        $stmt_delete_graduacao->execute();
-                        $stmt_delete_graduacao->close();
-                    }
-                }
-            }
-
-            // 2. Excluir registros da tabela de matrículas
-            $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_aluno = ?");
+            $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_usuario = ?");
             $stmt_delete_matriculas->bind_param("i", $id_aluno_post);
             $stmt_delete_matriculas->execute();
             $stmt_delete_matriculas->close();
 
-            // 3. Excluir o usuário aluno
             $stmt_delete_user = $conn->prepare("DELETE FROM usuarios WHERE id = ? AND tipo = 'A'");
             $stmt_delete_user->bind_param("i", $id_aluno_post);
             $stmt_delete_user->execute();
@@ -69,6 +42,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->close();
         exit;
     }
+
+    // --- ATUALIZAÇÃO (SALVAR) ---
+    if (isset($_POST['id']) && !empty($_POST['id']) && !isset($_POST['excluir'])) {
+        $id_aluno_update = $_POST['id'];
+        $nome = $_POST['nome'];
+        $usuario = $_POST['usuario'];
+        $senha = $_POST['senha'];
+        $telefone = $_POST['telefone'];
+        $email = $_POST['email'];
+        $modalidades_post = $_POST['modalidades'] ?? [];
+
+        $conn->begin_transaction();
+        try {
+            // 1. Atualiza dados básicos do usuário
+            if (!empty($senha)) {
+                $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ? WHERE id = ?");
+                $stmt_update_user->bind_param("sssssi", $nome, $usuario, $senha_hash, $telefone, $email, $id_aluno_update);
+            } else {
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, telefone = ?, email = ? WHERE id = ?");
+                $stmt_update_user->bind_param("ssssi", $nome, $usuario, $telefone, $email, $id_aluno_update);
+            }
+            $stmt_update_user->execute();
+            $stmt_update_user->close();
+
+            // 2. Limpa matrículas antigas e insere as novas
+            $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_usuario = ?");
+            $stmt_delete_matriculas->bind_param("i", $id_aluno_update);
+            $stmt_delete_matriculas->execute();
+            $stmt_delete_matriculas->close();
+
+            foreach ($modalidades_post as $id_modalidade => $dados) {
+                if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
+                    $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
+                    $stmt_grad->bind_param("si", $dados['graduacao'], $id_modalidade);
+                    $stmt_grad->execute();
+                    $result_grad = $stmt_grad->get_result();
+                    if ($grad_row = $result_grad->fetch_assoc()) {
+                        $id_graduacao = $grad_row['id'];
+                        $stmt_matricula = $conn->prepare("INSERT INTO matriculas (id_usuario, id_modalidade, id_graduacao) VALUES (?, ?, ?)");
+                        $stmt_matricula->bind_param("iii", $id_aluno_update, $id_modalidade, $id_graduacao);
+                        $stmt_matricula->execute();
+                        $stmt_matricula->close();
+                    }
+                    $stmt_grad->close();
+                }
+            }
+
+            $conn->commit();
+            echo "<script>alert('Aluno atualizado com sucesso!'); window.location.href = 'cadastro_aluno.php?id=" . $id_aluno_update . "';</script>";
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo "<script>alert('Erro ao atualizar aluno: " . $e->getMessage() . "'); window.history.back();</script>";
+        }
+        exit;
+    }
 }
 
 $id_aluno = null;
@@ -79,7 +108,8 @@ $aluno = [
     'email' => ''
 ];
 
-$aluno_modalidades = []; // Armazena as modalidades e graduações do aluno
+$aluno_modalidades_ids = []; //IDs das modalidades do aluno
+$aluno_graduacoes = []; //Graduações do aluno por modalidade
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_aluno = $_GET['id'];
@@ -97,28 +127,20 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit;
     }
     $stmt->close();
-}
 
-$sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
-$result_modalidades = $conn->query($sql_modalidades);
-$modalidades_disponiveis = [];
-if ($result_modalidades && $result_modalidades->num_rows > 0) {
-    while($row = $result_modalidades->fetch_assoc()) {
-        $modalidades_disponiveis[] = $row;
-        if ($id_aluno) {
-            $nome_tabela = formatar_nome_tabela($row['nome']);
-            $stmt_graduacao = $conn->prepare("SELECT faixa FROM `$nome_tabela` WHERE id_aluno = ?");
-            if ($stmt_graduacao) {
-                $stmt_graduacao->bind_param("i", $id_aluno);
-                $stmt_graduacao->execute();
-                $graduacao_result = $stmt_graduacao->get_result();
-                if ($graduacao_result->num_rows > 0) {
-                    $aluno_modalidades[$row['id']] = $graduacao_result->fetch_assoc()['faixa'];
-                }
-                $stmt_graduacao->close();
-            }
-        }
+    $stmt_grad_aluno = $conn->prepare(
+        "SELECT matriculas.id_modalidade, graduacoes.nome AS graduacao_nome 
+         FROM matriculas 
+         JOIN graduacoes ON matriculas.id_graduacao = graduacoes.id 
+         WHERE matriculas.id_usuario = ?");
+    $stmt_grad_aluno->bind_param("i", $id_aluno);
+    $stmt_grad_aluno->execute();
+    $result_grad_aluno = $stmt_grad_aluno->get_result();
+    while ($row_grad = $result_grad_aluno->fetch_assoc()) {
+        $aluno_modalidades_ids[] = $row_grad['id_modalidade'];
+        $aluno_graduacoes[$row_grad['id_modalidade']] = $row_grad['graduacao_nome'];
     }
+    $stmt_grad_aluno->close();
 }
 
 $sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
@@ -238,20 +260,22 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     $id_modalidade = $item['modalidade']['id'];
                     $nome_modalidade = htmlspecialchars($item['modalidade']['nome']);
                     $graduacoes = $item['graduacoes'];
+                    $is_checked = in_array($id_modalidade, $aluno_modalidades_ids);
+                    $graduacao_selecionada = $aluno_graduacoes[$id_modalidade] ?? 'Faixa/Estrela';
                 ?>
                 <div class="d-flex flex-row w-100 justify-content-between my-2">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1">
+                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1" <?php if ($is_checked) echo 'checked'; ?>>
                             <?php echo $nome_modalidade; ?>
                         </label>
                     </div>
                     
                     <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
-                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="">
+                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="<?php echo htmlspecialchars($graduacao_selecionada !== 'Faixa/Estrela' ? $graduacao_selecionada : ''); ?>">
                         <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
-                            Faixa/Estrela
+                            <?php echo htmlspecialchars($graduacao_selecionada); ?>
                         </button>
                         <ul class="dropdown-menu">
                             <?php foreach ($graduacoes as $graduacao) { ?>
@@ -313,7 +337,7 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     const botaoDropdown = linha.querySelector('.dropdown-bs-toggle');
                     const nomeModalidade = linha.querySelector('.form-check-label').textContent.trim();
 
-                    // Se a modalidade está marcada, mas a faixa/estrela não foi selecionada (e existe um dropdown)
+                    //Se a modalidade está marcada, mas a faixa/estrela não foi selecionada (e existe um dropdown)
                     if (caixaSelecao.checked && botaoDropdown && botaoDropdown.textContent.trim() === 'Faixa/Estrela') {
                         eValido = false;
                         mensagemErro = `Por favor, selecione a Faixa/Estrela para a modalidade "${nomeModalidade}".`;
@@ -326,12 +350,12 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                 }
             });
 
-            // Adiciona a confirmação para o botão de excluir
+            //Confirmação para o botão de excluir
             const btnExcluir = document.getElementById('btn-excluir');
             if (btnExcluir) {
                 btnExcluir.addEventListener('click', function(event) {
                     if (!confirm('Tem certeza que deseja excluir este cadastro? Esta ação não pode ser desfeita.')) {
-                        event.preventDefault(); // Cancela o envio do formulário se o usuário clicar em "Cancelar"
+                        event.preventDefault();
                     }
                 });
             }

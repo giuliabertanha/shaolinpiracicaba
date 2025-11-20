@@ -11,11 +11,6 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_POST['login'])) {
-    header("Location: login.php");
-    exit();
-}
-
 if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     header("Location: login.php");
     exit();
@@ -69,37 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $novo_id = $conn->insert_id;
 
-        $nome_tabela = formatar_nome_tabela($nome, $conn);
-        $sql_create_table = "CREATE TABLE `$nome_tabela` (
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            id_aluno INT,
-            faixa CHAR(30),
-            id_professor INT,
-            id_mod INT,
-            FOREIGN KEY (id_aluno) REFERENCES usuarios(id),
-            FOREIGN KEY (id_professor) REFERENCES usuarios(id),
-            FOREIGN KEY (id_mod) REFERENCES modalidades(id)
-        )";
-        if ($conn->query($sql_create_table)) {
-            // Inserir as faixas/estrelas na tabela 'graduacoes'
-            if (!empty($faixas)) {
-                $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
-                $ordem = 1;
-                foreach ($faixas as $faixa_nome) {
-                    $faixa_nome_trim = trim($faixa_nome);
-                    if (!empty($faixa_nome_trim)) {
-                        $stmt_faixa->bind_param("isi", $novo_id, $faixa_nome_trim, $ordem);
-                        $stmt_faixa->execute();
-                        $ordem++;
-                    }
+        // Inserir as faixas/estrelas na tabela 'graduacoes'
+        if (!empty($faixas)) {
+            $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
+            $ordem = 1;
+            foreach ($faixas as $faixa_nome) {
+                $faixa_nome_trim = trim($faixa_nome);
+                if (!empty($faixa_nome_trim)) {
+                    $stmt_faixa->bind_param("isi", $novo_id, $faixa_nome_trim, $ordem);
+                    $stmt_faixa->execute();
+                    $ordem++;
                 }
-                $stmt_faixa->close();
             }
-
-            echo "<script>alert('Modalidade e tabela criadas com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
-        } else {
-            echo "<script>alert('Modalidade criada, mas houve um erro ao criar a tabela: " . $conn->error . "'); window.location.href = 'cadastro_modalidades.php';</script>";
+            $stmt_faixa->close();
         }
+
+        echo "<script>alert('Modalidade criada com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
+
     } else {
         echo "<script>alert('Erro ao inserir dados: " . $stmt->error . "');</script>";
     }

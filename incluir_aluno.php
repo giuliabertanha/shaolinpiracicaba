@@ -23,33 +23,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
+    $modalidades_selecionadas = $_POST['modalidades'] ?? [];
 
-    $query_consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
-    $result = $conn->query($query_consulta);
+    // Verifica se o usuário já existe
+    $stmt_check = $conn->prepare("SELECT id FROM usuarios WHERE usuario = ?");
+    $stmt_check->bind_param("s", $usuario);
+    $stmt_check->execute();
+    $stmt_check->store_result();
 
-    if ($result->num_rows > 0) {
-        echo "<script>alert('Este nome de usuário já está em uso.');</script>";
-        exit();
-    } else {
-        $query_insert = "INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES ('$usuario', '$senha_hash', '$nome', '$telefone', '$email', 'A', '0')";
-
-        if ($conn->query($query_insert) === TRUE) {
-            // Dados salvos com sucesso
-            echo "<script>alert('Dados salvos com sucesso!');</script>";
-        } else {
-            // Erro ao salvar os dados
-            echo "<script>alert('Erro ao inserir dados: " . $conn->error . "');</script>";
-        }
+    if ($stmt_check->num_rows > 0) {
+        echo "<script>alert('Este nome de usuário já está em uso.'); window.history.back();</script>";
+        $stmt_check->close();
+        exit;
     }
-}
+    $stmt_check->close();
 
-// Formatando o nome da modalidade para um nome de tabela válido
-function formatar_nome_tabela($nome) {
-    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    $nome_minusculo = strtolower($nome_sem_acentos);
-    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    $nome_tabela = trim($nome_tabela, '_');
-    return $nome_tabela;
+    $conn->begin_transaction();
+
+    try {
+        // Insere o novo aluno
+        $stmt_insert = $conn->prepare("INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES (?, ?, ?, ?, ?, 'A', 0)");
+        $stmt_insert->bind_param("sssss", $usuario, $senha_hash, $nome, $telefone, $email);
+        $stmt_insert->execute();
+        $id_novo_aluno = $conn->insert_id;
+        $stmt_insert->close();
+
+        // Insere as matrículas
+        foreach ($modalidades_selecionadas as $id_modalidade => $dados) {
+            // Se a modalidade foi selecionada e uma graduação foi escolhida
+            if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
+                $nome_graduacao = $dados['graduacao'];
+
+                // Busca o ID da graduação pelo nome
+                $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
+                $stmt_grad->bind_param("si", $nome_graduacao, $id_modalidade);
+                $stmt_grad->execute();
+                $result_grad = $stmt_grad->get_result();
+
+                if ($grad_row = $result_grad->fetch_assoc()) {
+                    $id_graduacao = $grad_row['id'];
+                    $stmt_matricula = $conn->prepare("INSERT INTO matriculas (id_usuario, id_modalidade, id_graduacao) VALUES (?, ?, ?)");
+                    $stmt_matricula->bind_param("iii", $id_novo_aluno, $id_modalidade, $id_graduacao);
+                    $stmt_matricula->execute();
+                    $stmt_matricula->close();
+                }
+                $stmt_grad->close();
+            }
+        }
+        $conn->commit();
+        echo "<script>alert('Aluno cadastrado com sucesso!'); window.location.href = 'cadastro_alunos.php';</script>";
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo "<script>alert('Erro ao cadastrar aluno: " . $e->getMessage() . "'); window.history.back();</script>";
+    }
+    exit;
 }
 
 $sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
@@ -195,7 +222,7 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
                 <button type="submit" id="submit-button" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                <a href="cadastro_professores.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
+                <a href="cadastro_alunos.php" class="btn text-uppercase w-50 me-0 voltar">Voltar</a>
             </div>
         </form>
     </main>
@@ -225,6 +252,19 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     };
 
                     caixaSelecao.addEventListener('change', atualizarEstado);
+
+                    // Atualiza o botão e o input hidden com a graduação selecionada
+                    const dropdownItems = linha.querySelectorAll('.dropdown-item');
+                    dropdownItems.forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const nomeGraduacao = this.textContent;
+                            if (botaoDropdown && inputOculto) {
+                                botaoDropdown.textContent = nomeGraduacao;
+                                inputOculto.value = nomeGraduacao;
+                            }
+                        });
+                    });
                     
                     atualizarEstado();
                 }

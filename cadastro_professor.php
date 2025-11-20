@@ -16,15 +16,6 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
     exit();
 }
 
-// Formatando o nome da modalidade para um nome de tabela válido
-function formatar_nome_tabela($nome) {
-    $nome_sem_acentos = iconv('UTF-8', 'ASCII//TRANSLIT', $nome);
-    $nome_minusculo = strtolower($nome_sem_acentos);
-    $nome_tabela = preg_replace('/[^a-z0-9_]+/', '_', $nome_minusculo);
-    $nome_tabela = trim($nome_tabela, '_');
-    return $nome_tabela;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_professor_post = $_POST['id'] ?? null;
 
@@ -68,7 +59,109 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->close();
         exit;
     }
-    // Futuramente, a lógica de UPDATE (salvar) virá aqui.
+
+    // --- ATUALIZAÇÃO (SALVAR) ---
+    if (isset($_POST['id']) && !empty($_POST['id']) && !isset($_POST['excluir'])) {
+        $id_professor_update = $_POST['id'];
+        $nome = $_POST['nome'];
+        $usuario = $_POST['usuario'];
+        $senha = $_POST['senha'];
+        $telefone = $_POST['telefone'];
+        $email = $_POST['email'];
+        $admin = isset($_POST['admin']) ? 1 : 0;
+        $modalidades_post = $_POST['modalidades'] ?? [];
+
+        $conn->begin_transaction();
+        try {
+            // 1. Atualiza dados básicos do usuário
+            if (!empty($senha)) {
+                $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ?, admin = ? WHERE id = ?");
+                $stmt_update_user->bind_param("sssssii", $nome, $usuario, $senha_hash, $telefone, $email, $admin, $id_professor_update);
+            } else {
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, telefone = ?, email = ?, admin = ? WHERE id = ?");
+                $stmt_update_user->bind_param("ssssii", $nome, $usuario, $telefone, $email, $admin, $id_professor_update);
+            }
+            $stmt_update_user->execute();
+            $stmt_update_user->close();
+
+            // 2. Gerencia matrículas e associação com modalidades
+            // Pega as modalidades atuais do professor
+            $stmt_mod_atuais = $conn->prepare("SELECT id FROM modalidades WHERE id_professor1 = ? OR id_professor2 = ? OR id_professor3 = ? OR id_professor4 = ?");
+            $stmt_mod_atuais->bind_param("iiii", $id_professor_update, $id_professor_update, $id_professor_update, $id_professor_update);
+            $stmt_mod_atuais->execute();
+            $result_mod_atuais = $stmt_mod_atuais->get_result();
+            $modalidades_atuais_ids = [];
+            while ($row = $result_mod_atuais->fetch_assoc()) {
+                $modalidades_atuais_ids[] = $row['id'];
+            }
+            $stmt_mod_atuais->close();
+
+            $modalidades_selecionadas_ids = array_keys($modalidades_post);
+
+            // Desassocia das modalidades que foram desmarcadas
+            $modalidades_para_remover = array_diff($modalidades_atuais_ids, $modalidades_selecionadas_ids);
+            foreach ($modalidades_para_remover as $id_mod_remover) {
+                for ($i = 1; $i <= 4; $i++) {
+                    $stmt_remove = $conn->prepare("UPDATE modalidades SET id_professor$i = NULL WHERE id = ? AND id_professor$i = ?");
+                    $stmt_remove->bind_param("ii", $id_mod_remover, $id_professor_update);
+                    $stmt_remove->execute();
+                    $stmt_remove->close();
+                }
+            }
+
+            // Limpa matrículas antigas e insere as novas
+            $stmt_delete_matriculas = $conn->prepare("DELETE FROM matriculas WHERE id_usuario = ?");
+            $stmt_delete_matriculas->bind_param("i", $id_professor_update);
+            $stmt_delete_matriculas->execute();
+            $stmt_delete_matriculas->close();
+
+            foreach ($modalidades_post as $id_modalidade => $dados) {
+                if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
+                    // Insere nova matrícula
+                    $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
+                    $stmt_grad->bind_param("si", $dados['graduacao'], $id_modalidade);
+                    $stmt_grad->execute();
+                    $result_grad = $stmt_grad->get_result();
+                    if ($grad_row = $result_grad->fetch_assoc()) {
+                        $id_graduacao = $grad_row['id'];
+                        $stmt_matricula = $conn->prepare("INSERT INTO matriculas (id_usuario, id_modalidade, id_graduacao) VALUES (?, ?, ?)");
+                        $stmt_matricula->bind_param("iii", $id_professor_update, $id_modalidade, $id_graduacao);
+                        $stmt_matricula->execute();
+                        $stmt_matricula->close();
+                    }
+                    $stmt_grad->close();
+
+                    // Associa à modalidade se for uma nova associação
+                    if (!in_array($id_modalidade, $modalidades_atuais_ids)) {
+                        $slot_vago = null;
+                        for ($i = 1; $i <= 4; $i++) {
+                            $check_slot = $conn->query("SELECT id_professor$i FROM modalidades WHERE id = $id_modalidade")->fetch_assoc();
+                            if (is_null($check_slot['id_professor'.$i])) {
+                                $slot_vago = 'id_professor' . $i;
+                                break;
+                            }
+                        }
+                        if ($slot_vago) {
+                            $stmt_update_mod = $conn->prepare("UPDATE modalidades SET $slot_vago = ? WHERE id = ?");
+                            $stmt_update_mod->bind_param("ii", $id_professor_update, $id_modalidade);
+                            $stmt_update_mod->execute();
+                            $stmt_update_mod->close();
+                        } else {
+                            throw new Exception("A modalidade '{$dados['nome']}' já possui o número máximo de 4 professores.");
+                        }
+                    }
+                }
+            }
+
+            $conn->commit();
+            echo "<script>alert('Professor atualizado com sucesso!'); window.location.href = 'cadastro_professor.php?id=" . $id_professor_update . "';</script>";
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo "<script>alert('Erro ao atualizar professor: " . $e->getMessage() . "'); window.history.back();</script>";
+        }
+        exit;
+    }
 }
 
 $id_professor = null;
@@ -80,7 +173,8 @@ $professor = [
     'admin' => ''
 ];
 
-$professor_modalidades = []; // Armazena as modalidades e graduações do professor
+$professor_modalidades = []; // Armazena as modalidades que o professor leciona
+$professor_graduacoes = []; // Armazena as graduações do professor
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_professor = $_GET['id'];
@@ -89,7 +183,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $stmt->bind_param("i", $id_professor);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     if ($result->num_rows > 0) {
         $professor = $result->fetch_assoc();
     } else {
@@ -97,28 +191,30 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         exit;
     }
     $stmt->close();
-}
 
-$sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
-$result_modalidades = $conn->query($sql_modalidades);
-$modalidades_disponiveis = [];
-if ($result_modalidades && $result_modalidades->num_rows > 0) {
-    while($row = $result_modalidades->fetch_assoc()) {
-        $modalidades_disponiveis[] = $row;
-        if ($id_professor) {
-            $nome_tabela = formatar_nome_tabela($row['nome']);
-            $stmt_graduacao = $conn->prepare("SELECT faixa FROM `$nome_tabela` WHERE id_aluno = ?");
-            if ($stmt_graduacao) {
-                $stmt_graduacao->bind_param("i", $id_professor);
-                $stmt_graduacao->execute();
-                $graduacao_result = $stmt_graduacao->get_result();
-                if ($graduacao_result->num_rows > 0) {
-                    $professor_modalidades[$row['id']] = $graduacao_result->fetch_assoc()['faixa'];
-                }
-                $stmt_graduacao->close();
-            }
-        }
+    // Buscar modalidades que o professor leciona
+    $stmt_mod_prof = $conn->prepare("SELECT id FROM modalidades WHERE id_professor1 = ? OR id_professor2 = ? OR id_professor3 = ? OR id_professor4 = ?");
+    $stmt_mod_prof->bind_param("iiii", $id_professor, $id_professor, $id_professor, $id_professor);
+    $stmt_mod_prof->execute();
+    $result_mod_prof = $stmt_mod_prof->get_result();
+    while ($row_mod = $result_mod_prof->fetch_assoc()) {
+        $professor_modalidades[] = $row_mod['id'];
     }
+    $stmt_mod_prof->close();
+
+    // Buscar graduações do professor
+    $stmt_grad_prof = $conn->prepare(
+        "SELECT matriculas.id_modalidade, graduacoes.nome AS graduacao_nome 
+         FROM matriculas 
+         JOIN graduacoes ON matriculas.id_graduacao = graduacoes.id 
+         WHERE matriculas.id_usuario = ?");
+    $stmt_grad_prof->bind_param("i", $id_professor);
+    $stmt_grad_prof->execute();
+    $result_grad_prof = $stmt_grad_prof->get_result();
+    while ($row_grad = $result_grad_prof->fetch_assoc()) {
+        $professor_graduacoes[$row_grad['id_modalidade']] = $row_grad['graduacao_nome'];
+    }
+    $stmt_grad_prof->close();
 }
 
 $sql_modalidades = "SELECT id, nome FROM modalidades ORDER BY nome";
@@ -246,20 +342,22 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
                     $id_modalidade = $item['modalidade']['id'];
                     $nome_modalidade = htmlspecialchars($item['modalidade']['nome']);
                     $graduacoes = $item['graduacoes'];
+                    $is_checked = in_array($id_modalidade, $professor_modalidades);
+                    $graduacao_selecionada = $professor_graduacoes[$id_modalidade] ?? 'Faixa/Estrela';
                 ?>
                 <div class="d-flex flex-row w-100 justify-content-between my-2">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1">
+                            <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1" <?php if ($is_checked) echo 'checked'; ?>>
                             <?php echo $nome_modalidade; ?>
                         </label>
                     </div>
                     
                     <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
-                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="">
+                        <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="<?php echo htmlspecialchars($graduacao_selecionada !== 'Faixa/Estrela' ? $graduacao_selecionada : ''); ?>">
                         <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
-                            Faixa/Estrela
+                            <?php echo htmlspecialchars($graduacao_selecionada); ?>
                         </button>
                         <ul class="dropdown-menu">
                             <?php foreach ($graduacoes as $graduacao) { ?>

@@ -181,6 +181,10 @@ thead {
     outline: none;
 }
 
+.form-select {
+  height: 3rem !important;
+}
+
 /*MODALIDADES*/
 .modalidade{
     margin-bottom: 10px;
