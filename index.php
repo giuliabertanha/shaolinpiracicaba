@@ -1,10 +1,38 @@
+<?php
+session_start();
+$servername = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "shaolin";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+} 
+
+$user_id = null;
+$user_nome = '';
+if (isset($_SESSION['usuario'])) {
+    $stmt = $conn->prepare("SELECT id, nome FROM usuarios WHERE usuario = ?");
+    $stmt->bind_param("s", $_SESSION['usuario']);
+    $stmt->execute();
+    $result_user = $stmt->get_result();
+    if ($user = $result_user->fetch_assoc()) {
+        $user_id = $user['id'];
+        $user_nome = $user['nome'];
+    }
+    $stmt->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/stylesD.css">
+    <link rel="stylesheet" href="css/styles2.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="img/icon.png" type="image/x-icon">
@@ -54,11 +82,11 @@
         <nav class="navbar navbar-expand-lg p-0">
             <div class="container-fluid">
                 <div class="d-flex justify-content-between">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="index.php">
                         <img class="m-2" id="logo_cabecalho" src="img/logo.svg" alt="Logotipo">
                     </a>
                     <div class="flex-column">
-                        <a href="index.html">
+                        <a href="index.php">
                             <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,23 +96,32 @@
                             <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                                    <a class="nav-link active" aria-current="page" href="index.php">Home</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-bs-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Modalidades
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" href="modalidades.php">Visão Geral</a></li>
+                                        <li><a class="dropdown-item" href="shaolin.php">Shaolin do Norte</a></li>
+                                        <li><a class="dropdown-item" href="kids.php">Shaolin Kids</a></li>
+                                        <li><a class="dropdown-item" href="sanda.php">Sanda</a></li>
+                                        <li><a class="dropdown-item" href="taichi.php">Tai Chi Chuan</a></li>
+                                    </ul>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="modalidades.html">Modalidades</a>
+                                    <a class="nav-link" href="sobre.php">Sobre</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="sobre.html">Sobre</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="premiacoes.html">Premiações</a>
+                                    <a class="nav-link" href="premiacoes.php">Premiações</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="login.php">Área do Aluno/Professor</a>
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
-                                    <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
-                                    <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
+                                    <a href="meu_cadastro.php"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
+                                    <span class="text-uppercase"><a href="meu_cadastro.php"><?php echo htmlspecialchars($user_nome); ?></a></span>
                                 </div>
                             </ul>
                         </div>

@@ -3,8 +3,8 @@
  - Giulia Bertanha
  - João Pedro Gadelha Luiz
  - Manoel Carlos Batista da Silva
- - Maria Júlia Baptista Medeiros
+ - Maria Julia Baptista Medeiros
 
-Site desenvolvido por alunos de Engenharia da Computação da Escola de Engenharia de Piracicaba utilizando HTML, CSS, JavaScript e PHP para uma academia de kung fu.
+Site desenvolvido por alunos de Engenharia da Computação da Escola de Engenharia de Piracicaba para uma academia de kung fu, utilizando HTML, CSS, PHP, JavaScript e Bootstrap .
 
-[![My Skills](https://skillicons.dev/icons?i=html,css,js,php,bootstrap)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=html,css,php,js,bootstrap)](https://skillicons.dev)

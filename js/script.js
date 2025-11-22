@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- VALIDAÇÕES DE FORMULÁRIO ---
+    //VALIDAÇÕES DE FORMULÁRIO
     const formulario = document.querySelector('form');
     if (!formulario) return; // Se não houver formulário na página, não faz nada
 
@@ -90,3 +90,6 @@ document.addEventListener('DOMContentLoaded', function () {
         validarFormulario();
     }
 });
+
+
+    

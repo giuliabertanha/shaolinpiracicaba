@@ -35,22 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //UPDATE
     $nome = $_POST['nome'];
-    $professores_selecionados = $_POST['professores'] ?? [];
     $faixas = $_POST['faixas'] ?? [];
 
-    if (count($professores_selecionados) >= 4) {
-        echo "<script>alert('Você só pode selecionar no máximo 4 professores.'); window.history.back();</script>";
-        exit;
-    }
-
-    $id_professor1 = isset($professores_selecionados[0]) ? (int)$professores_selecionados[0] : null;
-    $id_professor2 = isset($professores_selecionados[1]) ? (int)$professores_selecionados[1] : null;
-    $id_professor3 = isset($professores_selecionados[2]) ? (int)$professores_selecionados[2] : null;
-    $id_professor4 = isset($professores_selecionados[3]) ? (int)$professores_selecionados[3] : null;
-
     if (!empty($id_modalidade_post)) {
-        $stmt = $conn->prepare("UPDATE modalidades SET nome = ?, id_professor1 = ?, id_professor2 = ?, id_professor3 = ?, id_professor4 = ? WHERE id = ?");
-        $stmt->bind_param("siiiii", $nome, $id_professor1, $id_professor2, $id_professor3, $id_professor4, $id_modalidade_post);
+        $stmt = $conn->prepare("UPDATE modalidades SET nome = ? WHERE id = ?");
+        $stmt->bind_param("si", $nome, $id_modalidade_post);
     } 
 
     if ($stmt->execute()) {
@@ -87,21 +76,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $id_modalidade = null;
 $modalidade = [
     'nome' => '',
-    'id_professor1' => null,
-    'id_professor2' => null,
-    'id_professor3' => null,
-    'id_professor4' => null,
 ];
 $faixas_cadastradas = [];
-
-$sql_professores = "SELECT id, nome FROM usuarios WHERE tipo = 'P' ORDER BY nome";
-$result_professores = $conn->query($sql_professores);
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_modalidade = $_GET['id'];
     $titulo_pagina = "Editar modalidade";
 
-    $stmt = $conn->prepare("SELECT id, nome, id_professor1, id_professor2, id_professor3, id_professor4 FROM modalidades WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, nome FROM modalidades WHERE id = ?");
     $stmt->bind_param("i", $id_modalidade);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -124,6 +106,19 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $stmt_faixas->close();
 }
 
+$user_id = null;
+$user_nome = '';
+if (isset($_SESSION['usuario'])) {
+    $stmt = $conn->prepare("SELECT id, nome FROM usuarios WHERE usuario = ?");
+    $stmt->bind_param("s", $_SESSION['usuario']);
+    $stmt->execute();
+    $result_user = $stmt->get_result();
+    if ($user = $result_user->fetch_assoc()) {
+        $user_id = $user['id'];
+        $user_nome = $user['nome'];
+    }
+    $stmt->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -142,11 +137,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         <nav class="navbar navbar-expand-lg p-0">
             <div class="container-fluid">
                 <div class="d-flex justify-content-between">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="index.php">
                         <img class="m-2" id="logo_cabecalho" src="img/logo.svg" alt="Logotipo">
                     </a>
                     <div class="flex-column">
-                        <a href="index.html">
+                        <a href="index.php">
                             <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -156,32 +151,32 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                             <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="index.html">Home</a>
+                                    <a class="nav-link" href="index.php">Home</a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-bs-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Modalidades
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item" href="modalidades.html">Visão Geral</a></li>
-                                        <li><a class="dropdown-item" href="shaolin.html">Shaolin do Norte</a></li>
-                                        <li><a class="dropdown-item" href="kids.html">Shaolin Kids</a></li>
-                                        <li><a class="dropdown-item" href="sanda.html">Sanda</a></li>
-                                        <li><a class="dropdown-item" href="taichi.html">Tai Chi Chuan</a></li>
+                                        <li><a class="dropdown-item" href="modalidades.php">Visão Geral</a></li>
+                                        <li><a class="dropdown-item" href="shaolin.php">Shaolin do Norte</a></li>
+                                        <li><a class="dropdown-item" href="kids.php">Shaolin Kids</a></li>
+                                        <li><a class="dropdown-item" href="sanda.php">Sanda</a></li>
+                                        <li><a class="dropdown-item" href="taichi.php">Tai Chi Chuan</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="sobre.html">Sobre</a>
+                                    <a class="nav-link" href="sobre.php">Sobre</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="premiacoes.html">Premiações</a>
+                                    <a class="nav-link" href="premiacoes.php">Premiações</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page" href="area_professor.php">Área do Professor</a>
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
-                                    <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
-                                    <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
+                                    <a href="meu_cadastro.php"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
+                                    <span class="text-uppercase"><a href="meu_cadastro.php"><?php echo htmlspecialchars($user_nome); ?></a></span>
                                 </div>
                             </ul>
                         </div>
@@ -197,26 +192,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" name="nome" id="nome" value="<?php echo htmlspecialchars($modalidade['nome']); ?>" required>
-            </div>
-            <div class="mb-3">
-                <label for="professores" class="form-label">Professores</label>  
-                <?php
-                    if ($result_professores->num_rows > 0) {
-                        $result_professores->data_seek(0); 
-                        while($professor = $result_professores->fetch_assoc()) {
-                            $checked = '';
-                            if ($modalidade['id_professor1'] == $professor['id'] || $modalidade['id_professor2'] == $professor['id'] || $modalidade['id_professor3'] == $professor['id'] || $modalidade['id_professor4'] == $professor['id']) {
-                                $checked = 'checked';
-                            }
-                            echo '<div class="form-check">';
-                            echo '  <label class="form-check-label">';
-                            echo '      <input type="checkbox" class="form-check-input" name="professores[]" value="' . htmlspecialchars($professor['id']) . '" ' . $checked . '>';
-                            echo '      ' . htmlspecialchars($professor['nome']);
-                            echo '  </label>';
-                            echo '</div>';
-                        }
-                    }
-                ?>
             </div>
             <div class="mb-3">
                 <label class="form-label">Faixas/Estrelas</label>
@@ -270,29 +245,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
         });
 
-        // Bloqueia a seleção de mais de 4 professores
         document.addEventListener('DOMContentLoaded', function () {
-            const checkboxes = document.querySelectorAll('input[name="professores[]"]');
-
-            function updateCheckboxState() {
-                const checkedCount = document.querySelectorAll('input[name="professores[]"]:checked').length;
-
-                if (checkedCount >= 4) {
-                    checkboxes.forEach(cb => {
-                        if (!cb.checked) {
-                            cb.disabled = true;
-                        }
-                    });
-                } else {
-                    checkboxes.forEach(cb => {
-                        cb.disabled = false;
-                    });
-                }
-            }
-            checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCheckboxState));
-            updateCheckboxState();
-
-            //Adiciona campos de faixa/estrela dinamicamente
             document.getElementById('add-faixa').addEventListener('click', function() {
                 const container = document.getElementById('faixas-container');
                 const div = document.createElement('div');

@@ -1,11 +1,6 @@
 <?php
 session_start();
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// require 'vendor/autoload.php'; //Ajustar
-
 $servername = "localhost";
 $username = "root";
 $password = "root";
@@ -32,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
             if (password_verify($senha_post, $user['senha'])) {
+                $_SESSION['id'] = $user['id'];
                 $_SESSION['usuario'] = $user['usuario'];
                 $_SESSION['tipo'] = $user['tipo'];
                 $_SESSION['admin'] = $user['admin'];
@@ -49,39 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
         }
         $stmt->close();
     }
-
-    //Envio de e-mail (Esqueci minha senha) - configurar
-// require 'path/to/PHPMailer/src/Exception.php';
-// require 'path/to/PHPMailer/src/PHPMailer.php';
-// require 'path/to/PHPMailer/src/SMTP.php';
-
-// $mail = new PHPMailer(true); // Enable exceptions
-
-// try {
-//     // Server settings
-//     $mail->isSMTP();
-//     $mail->Host       = 'smtp.gmail.com'; // Your SMTP server
-//     $mail->SMTPAuth   = true;
-//     $mail->Username   = 'teste.projeto.comp@gmail.com'; // SMTP username
-//     $mail->Password   = 'XXXX'; // SMTP password
-//     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // or PHPMailer::ENCRYPTION_SMTPS
-//     $mail->Port       = 587; // or 465 for SMTPS
-
-//     // Recipients
-//     $mail->setFrom('teste.projeto.comp@gmail.com', 'Shaolin Kung Fu Piracicaba');
-//     $mail->addAddress('example@email.com', 'Recipient Name');
-
-//     // Content
-//     $mail->isHTML(true);
-//     $mail->Subject = 'Here is the subject';
-//     $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-//     $mail->AltBody = 'This is the plain text version for non-HTML mail clients';
-
-//     $mail->send();
-//     echo 'Message has been sent';
-// } catch (Exception $e) {
-//     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-// }
 }
 $conn->close();
 ?>
@@ -101,11 +64,11 @@ $conn->close();
         <nav class="navbar navbar-expand-lg p-0">
             <div class="container-fluid">
                 <div class="d-flex justify-content-between">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="index.php">
                         <img class="m-2" id="logo_cabecalho" src="img/logo.svg" alt="Logotipo">
                     </a>
                     <div class="flex-column">
-                        <a href="index.html">
+                        <a href="index.php">
                             <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,33 +78,29 @@ $conn->close();
                             <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="index.html">Home</a>
+                                    <a class="nav-link" href="index.php">Home</a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-bs-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Modalidades
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item" href="modalidades.html">Visão Geral</a></li>
-                                        <li><a class="dropdown-item" href="shaolin.html">Shaolin do Norte</a></li>
-                                        <li><a class="dropdown-item" href="kids.html">Shaolin Kids</a></li>
-                                        <li><a class="dropdown-item" href="sanda.html">Sanda</a></li>
-                                        <li><a class="dropdown-item" href="taichi.html">Tai Chi Chuan</a></li>
+                                        <li><a class="dropdown-item" href="modalidades.php">Visão Geral</a></li>
+                                        <li><a class="dropdown-item" href="shaolin.php">Shaolin do Norte</a></li>
+                                        <li><a class="dropdown-item" href="kids.php">Shaolin Kids</a></li>
+                                        <li><a class="dropdown-item" href="sanda.php">Sanda</a></li>
+                                        <li><a class="dropdown-item" href="taichi.php">Tai Chi Chuan</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="sobre.html">Sobre</a>
+                                    <a class="nav-link" href="sobre.php">Sobre</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="premiacoes.html">Premiações</a>
+                                    <a class="nav-link" href="premiacoes.php">Premiações</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page" href="login.php">Área do Aluno/Professor</a>
                                 </li>
-                                <div id="user" class="d-flex align-items-center">
-                                    <a href="#"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
-                                    <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
-                                </div>
                             </ul>
                         </div>
                     </div>
@@ -164,12 +123,12 @@ $conn->close();
                 <div class="forgot-password">
                     <a href="#" id="forgotPasswordLink">Esqueci minha senha</a>
                 </div>
-                <?php if (!empty($error_message)): ?>
+                <?php if (!empty($error_message)) { ?>
                     <div id="message" class="message error" style="display: block;"><?php echo $error_message; ?></div>
-                <?php endif; ?>
-                <?php if (!empty($success_message)): ?>
+                <?php } ?>
+                <?php if (!empty($success_message)) { ?>
                     <div id="message" class="message success" style="display: block;"><?php echo $success_message; ?></div>
-                <?php endif; ?>
+                <?php } ?>
                 <button type="submit" name="login" class="btn text-uppercase w-100 ms-0 mt-3 mb-3 btn_verde">Entrar</button>
             </form>
 
