@@ -11,10 +11,13 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P' || $_SESSION['id'] == $_GET['id']) {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if ($_SESSION['tipo'] != 'P') {
+    echo "<script>alert('Essa página exige acesso com um usuário de professor.'); window.location.href = 'login.php';</script>";
 }
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_aluno_post = $_POST['id'] ?? null;
@@ -50,17 +53,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $senha = $_POST['senha'];
         $telefone = $_POST['telefone'];
         $email = $_POST['email'];
+        $emb_ab = isset($_POST['emb_ab']) ? 1 : 0;
+        $emb_5anos = isset($_POST['emb_5anos']) ? 1 : 0;
+        $emb_camp = isset($_POST['emb_camp']) ? 1 : 0;
         $modalidades_post = $_POST['modalidades'] ?? [];
 
         $conn->begin_transaction();
         try {
             if (!empty($senha)) {
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ? WHERE id = ?");
-                $stmt_update_user->bind_param("sssssi", $nome, $usuario, $senha_hash, $telefone, $email, $id_aluno_update);
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ?, emb_ab = ?, emb_5anos = ?, emb_camp = ? WHERE id = ?");
+                $stmt_update_user->bind_param("sssssiiii", $nome, $usuario, $senha_hash, $telefone, $email, $emb_ab, $emb_5anos, $emb_camp, $id_aluno_update);
             } else {
-                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, telefone = ?, email = ? WHERE id = ?");
-                $stmt_update_user->bind_param("ssssi", $nome, $usuario, $telefone, $email, $id_aluno_update);
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ?, emb_ab = ?, emb_5anos = ?, emb_camp = ? WHERE id = ?");
+                $stmt_update_user->bind_param("sssssiiii", $nome, $usuario, $senha_hash, $telefone, $email, $emb_ab, $emb_5anos, $emb_camp, $id_aluno_update);
             }
             $stmt_update_user->execute();
             $stmt_update_user->close();
@@ -112,7 +118,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id_aluno = $_GET['id'];
     $titulo_pagina = "Cadastro do aluno";
 
-    $stmt = $conn->prepare("SELECT nome, usuario, telefone, email, admin FROM usuarios WHERE id = ? AND tipo = 'A'");
+    $stmt = $conn->prepare("SELECT nome, usuario, telefone, email, emb_ab, emb_5anos, emb_camp FROM usuarios WHERE id = ? AND tipo = 'A'");
     $stmt->bind_param("i", $id_aluno);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -263,6 +269,21 @@ if (isset($_SESSION['usuario'])) {
                     <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($aluno['email']); ?>" required>
                     <div id="email-error" class="form-error"></div>
                 </div>
+            </div>
+            <label for="emblemas" class="form-label">Emblemas</label>
+            <div class="d-flex w-100 mb-4">
+                <label class="form-check-label me-4">
+                    <input type="checkbox" class="form-check-input" name="emb_ab" id="emb_ab" <?php if ($aluno['emb_ab']) echo 'checked'; ?>>
+                    Abertura Completa
+                </label>   
+                <label class="form-check-label me-4">
+                    <input type="checkbox" class="form-check-input" name="emb_5anos" id="emb_5anos" <?php if ($aluno['emb_5anos']) echo 'checked'; ?>>
+                    5 anos de treino
+                </label>  
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="emb_camp" id="emb_camp" <?php if ($aluno['emb_camp']) echo 'checked'; ?>>
+                    Medalhista de campeonato
+                </label>                   
             </div>
             <div class="mb-3">
                 <label for="modalidades" class="form-label">Modalidades</label>

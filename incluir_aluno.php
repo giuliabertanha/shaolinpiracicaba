@@ -11,9 +11,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] != 'P') {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if ($_SESSION['tipo'] != 'P') {
+    echo "<script>alert('Essa página exige acesso com um usuário de professor.'); window.location.href = 'login.php';</script>";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,7 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
+    $emb_ab = isset($_POST['emb_ab']) ? 1 : 0;
+    $emb_5anos = isset($_POST['emb_5anos']) ? 1 : 0;
+    $emb_camp = isset($_POST['emb_camp']) ? 1 : 0;
     $modalidades_selecionadas = $_POST['modalidades'] ?? [];
+
+    if (empty($modalidades_selecionadas)) {
+        echo "<script>alert('É obrigatório selecionar ao menos uma modalidade.'); window.history.back();</script>";
+        exit;
+    }
 
     // Verifica se o usuário já existe
     $stmt_check = $conn->prepare("SELECT id FROM usuarios WHERE usuario = ?");
@@ -41,20 +51,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->begin_transaction();
 
     try {
-        // Insere o novo aluno
-        $stmt_insert = $conn->prepare("INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin) VALUES (?, ?, ?, ?, ?, 'A', 0)");
-        $stmt_insert->bind_param("sssss", $usuario, $senha_hash, $nome, $telefone, $email);
+        $stmt_insert = $conn->prepare("INSERT INTO usuarios (usuario, senha, nome, telefone, email, tipo, admin, emb_ab, emb_5anos, emb_camp) VALUES (?, ?, ?, ?, ?, 'A', 0, ?, ?, ?)");
+        $stmt_insert->bind_param("sssssiii", $usuario, $senha_hash, $nome, $telefone, $email, $emb_ab, $emb_5anos, $emb_camp);
         $stmt_insert->execute();
         $id_novo_aluno = $conn->insert_id;
         $stmt_insert->close();
 
-        // Insere as matrículas
         foreach ($modalidades_selecionadas as $id_modalidade => $dados) {
-            // Se a modalidade foi selecionada e uma graduação foi escolhida
             if (isset($dados['selecionada']) && !empty($dados['graduacao'])) {
                 $nome_graduacao = $dados['graduacao'];
 
-                // Busca o ID da graduação pelo nome
                 $stmt_grad = $conn->prepare("SELECT id FROM graduacoes WHERE nome = ? AND id_modalidade = ?");
                 $stmt_grad->bind_param("si", $nome_graduacao, $id_modalidade);
                 $stmt_grad->execute();
@@ -201,6 +207,21 @@ if (isset($_SESSION['usuario'])) {
                     <input type="text" class="input-field" name="telefone" id="telefone" autocomplete="off" maxlength="15" required>
                     <div id="telefone-error" class="form-error"></div>
                 </div>
+            </div>
+            <label for="emblemas" class="mt-4 form-label">Emblemas</label>
+            <div class="d-flex w-100 mb-4">
+                <label class="form-check-label me-4">
+                    <input type="checkbox" class="form-check-input" name="emb_ab" id="emb_ab">
+                    Abertura Completa
+                </label>   
+                <label class="form-check-label me-4">
+                    <input type="checkbox" class="form-check-input" name="emb_5anos" id="emb_5anos">
+                    5 anos de treino
+                </label>  
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="emb_camp" id="emb_camp">
+                    Medalhista de campeonato
+                </label>                   
             </div>
             <div class="mb-3">
                 <label for="modalidades" class="form-label">Modalidades</label>
