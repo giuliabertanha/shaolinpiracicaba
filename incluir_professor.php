@@ -11,9 +11,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if (!isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+    echo "<script>alert('Essa página exige acesso com um usuário administrador.'); window.location.href = 'cadastro_professores.php';</script>";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -111,6 +113,20 @@ if ($result_modalidades && $result_modalidades->num_rows > 0) {
         $stmt_graduacoes->execute();
         $modalidades_disponiveis[] = ['modalidade' => $row, 'graduacoes' => $stmt_graduacoes->get_result()->fetch_all(MYSQLI_ASSOC)];
     }
+}
+
+$user_id = null;
+$user_nome = '';
+if (isset($_SESSION['usuario'])) {
+    $stmt = $conn->prepare("SELECT id, nome FROM usuarios WHERE usuario = ?");
+    $stmt->bind_param("s", $_SESSION['usuario']);
+    $stmt->execute();
+    $result_user = $stmt->get_result();
+    if ($user = $result_user->fetch_assoc()) {
+        $user_id = $user['id'];
+        $user_nome = $user['nome'];
+    }
+    $stmt->close();
 }
 ?>
 

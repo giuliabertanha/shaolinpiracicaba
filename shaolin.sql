@@ -55,7 +55,23 @@ CREATE TABLE `usuarios` (
   `telefone` char(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `email` char(50) DEFAULT NULL,
   `tipo` char(1) DEFAULT NULL,
-  `admin` int DEFAULT NULL
+  `admin` int DEFAULT NULL,
+  `emb_ab` int NOT NULL,
+  `emb_5anos` int NOT NULL,
+  `emb_camp` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Estrutura para tabela `modalidades`
+--
+
+CREATE TABLE `modalidades` (
+  `id` int NOT NULL,
+  `nome` char(50) DEFAULT NULL,
+  `id_professor1` int DEFAULT NULL,
+  `id_professor2` int DEFAULT NULL,
+  `id_professor3` int DEFAULT NULL,
+  `id_professor4` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -94,25 +110,25 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `graduacoes`
 --
 ALTER TABLE `graduacoes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `matriculas`
 --
 ALTER TABLE `matriculas`
-  MODIFY `cod` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `cod` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `modalidades`
 --
 ALTER TABLE `modalidades`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- Restrições para tabelas `graduacoes`

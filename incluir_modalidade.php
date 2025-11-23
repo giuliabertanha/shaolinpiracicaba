@@ -11,9 +11,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if (!isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+    echo "<script>alert('Essa página exige acesso com um usuário administrador.'); window.location.href = 'cadastro_modalidades.php';</script>";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -38,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $novo_id = $conn->insert_id;
 
-        //Inserindo as faixas/estrelas na tabela graduacoe
         if (!empty($faixas)) {
             $stmt_faixa = $conn->prepare("INSERT INTO graduacoes (id_modalidade, nome, ordem) VALUES (?, ?, ?)");
             $ordem = 1;
@@ -52,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $stmt_faixa->close();
         }
-
+        
         echo "<script>alert('Modalidade criada com sucesso!'); window.location.href = 'cadastro_modalidades.php';</script>";
 
     } else {
@@ -61,6 +62,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     $conn->close();
     exit;
+}
+
+$user_id = null;
+$user_nome = '';
+if (isset($_SESSION['usuario'])) {
+    $stmt = $conn->prepare("SELECT id, nome FROM usuarios WHERE usuario = ?");
+    $stmt->bind_param("s", $_SESSION['usuario']);
+    $stmt->execute();
+    $result_user = $stmt->get_result();
+    if ($user = $result_user->fetch_assoc()) {
+        $user_id = $user['id'];
+        $user_nome = $user['nome'];
+    }
+    $stmt->close();
 }
 ?>
 
@@ -119,8 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
                                     <a href="meu_cadastro.php"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>
-                                    <span class="text-uppercase"><a href="meu_cadastro.php"><?php echo htmlspecialchars($user_nome); ?></a></span>"></i></a>
-                                    <span class="text-uppercase"><a href="#">Nome do usuário</a></span>
+                                    <span class="text-uppercase"><a href="meu_cadastro.php"><?php echo htmlspecialchars($user_nome); ?></a></span>
                                 </div>
                             </ul>
                         </div>

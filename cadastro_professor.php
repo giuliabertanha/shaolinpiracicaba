@@ -11,19 +11,20 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-// Primeiro, verifica se o usuário está logado. Se não, redireciona para o login.
 if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if (!isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+    echo "<script>alert('Essa página exige acesso com um usuário administrador.'); window.location.href = 'cadastro_professores.php';</script>";
 }
 
-$admin_logado = isset($_SESSION['admin']) && $_SESSION['admin'] == 1;
-$proprio_perfil = isset($_SESSION['id']) && isset($_GET['id']) && $_SESSION['id'] == $_GET['id'];
+// $admin_logado = isset($_SESSION['admin']) && $_SESSION['admin'] == 1;
+// $proprio_perfil = isset($_SESSION['id']) && isset($_GET['id']) && $_SESSION['id'] == $_GET['id'];
 
-if (!$admin_logado && !$proprio_perfil) {
-    header("Location: login.php");
-    exit();
-}
+// if (!$admin_logado && !$proprio_perfil) {
+//     header("Location: login.php");
+//     exit();
+// }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_professor_post = $_POST['id'] ?? null;

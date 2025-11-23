@@ -14,16 +14,19 @@ if ($conn->connect_error) {
 $user_id = null;
 $user_nome = '';
 if (isset($_SESSION['usuario'])) {
-    $stmt = $conn->prepare("SELECT id, nome FROM usuarios WHERE usuario = ?");
+    $stmt = $conn->prepare("SELECT id, nome, tipo FROM usuarios WHERE usuario = ?");
     $stmt->bind_param("s", $_SESSION['usuario']);
     $stmt->execute();
     $result_user = $stmt->get_result();
     if ($user = $result_user->fetch_assoc()) {
         $user_id = $user['id'];
         $user_nome = $user['nome'];
+        $tipo_usuario = $user['tipo'];
     }
     $stmt->close();
 }
+
+$area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno.php';
 ?>
 
 <!DOCTYPE html>
@@ -130,7 +133,7 @@ if (isset($_SESSION['usuario'])) {
                                     <a class="nav-link" href="premiacoes.php">Premiações</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="login.php">Área do Aluno/Professor</a>
+                                    <a class="nav-link" href="<?php if (isset($_SESSION['usuario'])) { echo $area_usuario_link; } else { echo 'login.php';}?>">Área do Aluno/Professor</a>
                                 </li>
                                 <div id="user" class="d-flex align-items-center">
                                     <a href="meu_cadastro.php"><i class="fa-solid fa-user m-2" style="color: #161616;"></i></a>

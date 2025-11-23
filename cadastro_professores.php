@@ -11,9 +11,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if ($_SESSION['tipo'] != 'P') {
+    echo "<script>alert('Essa página exige acesso com um usuário de professor.'); window.location.href = 'login.php';</script>";
 }
 
 $sql = "SELECT 

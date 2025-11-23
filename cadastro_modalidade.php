@@ -11,9 +11,11 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 } 
 
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+if (!isset($_SESSION['usuario'])) {
     header("Location: login.php");
     exit();
+} else if (!isset($_SESSION['admin']) || $_SESSION['admin'] == 0) {
+    echo "<script>alert('Essa página exige acesso com um usuário administrador'); window.location.href = 'area_professor.php';</script>";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

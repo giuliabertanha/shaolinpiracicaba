@@ -33,8 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
                 $_SESSION['admin'] = $user['admin'];
                 if ($user['tipo'] == 'A') {
                     header("Location: area_aluno.php");
+                    $area_usuario_link = 'area_aluno.php';
                 } elseif ($user['tipo'] == 'P') {
                     header("Location: area_professor.php");
+                    $area_usuario_link = 'area_professor.php';
                 }
                 exit();
             } else {
@@ -47,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
     }
 }
 $conn->close();
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -99,7 +102,7 @@ $conn->close();
                                     <a class="nav-link" href="premiacoes.php">Premiações</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="login.php">Área do Aluno/Professor</a>
+                                    <a class="nav-link" href="<?php if (isset($_SESSION['usuario'])) { echo $area_usuario_link; } else { echo 'login.php';}?>">Área do Aluno/Professor</a>
                                 </li>
                             </ul>
                         </div>

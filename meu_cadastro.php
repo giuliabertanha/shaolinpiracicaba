@@ -80,13 +80,11 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $usuario_data = $result->fetch_assoc();
 } else {
-    // Isso não deve acontecer se o usuário estiver logado corretamente
     echo "<script>alert('Erro: Perfil não encontrado!'); window.location.href = 'login.php';</script>";
     exit;
 }
 $stmt->close();
 
-// Nova lógica: buscar modalidades e graduações do usuário com um único JOIN.
 $sql_matriculas = "
     SELECT m.nome AS modalidade_nome, g.nome AS graduacao_nome
     FROM matriculas mat
@@ -226,7 +224,7 @@ if (isset($_SESSION['usuario'])) {
                         </div>
                     <?php } ?>
                     <?php $stmt_matriculas->close(); ?>
-                <?php else: ?>
+                <?php } else { ?>
                     <p>Nenhuma modalidade encontrada.</p>
                 <?php } ?>
             </div>
