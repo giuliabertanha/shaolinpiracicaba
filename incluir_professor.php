@@ -202,7 +202,7 @@ if (isset($_SESSION['usuario'])) {
                 <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" required>
                 <div id="nome-error" class="form-error"></div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="div-form">
                 <div class="me-2 w-50">
                     <label for="usuario" class="form-label">Usuário</label>
                     <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" required>
@@ -219,13 +219,13 @@ if (isset($_SESSION['usuario'])) {
                     <div id="telefone-error" class="form-error"></div>
                 </div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="div-form">
                 <div class="me-2" style="width: 88%">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" required>
                     <div id="email-error" class="form-error"></div>
                 </div>
-                <div class="ms-2 mt-5" style="width: 12%">
+                <div class="ms-2 check-admin" style="width: 12%">
                     <div class="form-check">
                     <label class="form-check-label">
                         <input type="checkbox" class="form-check-input" name="admin" id="admin">
@@ -241,7 +241,7 @@ if (isset($_SESSION['usuario'])) {
                     $nome_modalidade = htmlspecialchars($item['modalidade']['nome']);
                     $graduacoes = $item['graduacoes'];
                 ?>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">
+                <div class="d-flex flex-row w-100 justify-content-between my-2 div-form-modalidades">
                     <div class="form-check">
                         <label class="form-check-label">
                             <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1">
@@ -252,7 +252,7 @@ if (isset($_SESSION['usuario'])) {
                     <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
                         <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
+                        <button class="dropdown-bs-toggle btn btn-light dropdown-faixa" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Faixa/Estrela
                         </button>
                         <ul class="dropdown-menu">

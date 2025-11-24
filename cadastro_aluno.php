@@ -246,7 +246,7 @@ if (isset($_SESSION['usuario'])) {
                 <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($aluno['nome']); ?>" required>
                 <div id="nome-error" class="form-error"></div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="div-form">
                 <div class="me-2 w-50">
                     <label for="usuario" class="form-label">Usuário</label>
                     <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" value="<?php echo htmlspecialchars($aluno['usuario']); ?>" required>
@@ -263,7 +263,7 @@ if (isset($_SESSION['usuario'])) {
                     <div id="telefone-error" class="form-error"></div>
                 </div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="div-form">
                 <div class="me-2" style="width: 88%">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($aluno['email']); ?>" required>
@@ -294,7 +294,7 @@ if (isset($_SESSION['usuario'])) {
                     $is_checked = in_array($id_modalidade, $aluno_modalidades_ids);
                     $graduacao_selecionada = $aluno_graduacoes[$id_modalidade] ?? 'Faixa/Estrela';
                 ?>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">
+                <div class="d-flex flex-row w-100 justify-content-between my-2 div-form-modalidades">
                     <div class="form-check">
                         <label class="form-check-label">
                             <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1" <?php if ($is_checked) echo 'checked'; ?>>
@@ -305,7 +305,7 @@ if (isset($_SESSION['usuario'])) {
                     <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
                         <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="<?php echo htmlspecialchars($graduacao_selecionada !== 'Faixa/Estrela' ? $graduacao_selecionada : ''); ?>">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
+                        <button class="dropdown-bs-toggle btn btn-light dropdown-faixa" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             <?php echo htmlspecialchars($graduacao_selecionada); ?>
                         </button>
                         <ul class="dropdown-menu">
@@ -319,10 +319,10 @@ if (isset($_SESSION['usuario'])) {
                 <?php } ?>
             </div>
             <div class="d-flex w-100 mt-4 mb-5">
-                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                <a href="cadastro_alunos.php" class="btn text-uppercase w-50 voltar">Voltar</a>
+                <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde" style="@media (max-width: 768px) {width:25%;}">Salvar</button>
+                <a href="cadastro_alunos.php" class="btn text-uppercase w-50 voltar" style="@media (max-width: 768px) {width:25%; margin:auto 0 !important;}">Voltar</a>
                 <?php if ($id_aluno) { ?>
-                    <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" id="btn-excluir">Excluir</button>
+                    <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" style="@media (max-width: 768px) {width:25%;}" id="btn-excluir">Excluir</button>
                 <?php } ?>
             </div>
         </form>

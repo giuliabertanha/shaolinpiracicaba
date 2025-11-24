@@ -189,7 +189,7 @@ if (isset($_SESSION['usuario'])) {
                 <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($usuario_data['nome']); ?>" readonly>
                 <div id="nome-error" class="form-error"></div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="d-flex div-form mb-3">
                 <div class="me-2 w-50">
                     <label for="usuario" class="form-label">Usuário</label>
                     <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" value="<?php echo htmlspecialchars($usuario_data['usuario']); ?>" readonly>
@@ -206,7 +206,7 @@ if (isset($_SESSION['usuario'])) {
                     <div id="telefone-error" class="form-error"></div>
                 </div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="d-flex div-form mb-3">
                 <div class="me-2" style="width: 100%">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" value="<?php echo htmlspecialchars($usuario_data['email']); ?>" readonly>

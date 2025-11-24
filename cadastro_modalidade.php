@@ -210,10 +210,10 @@ if (isset($_SESSION['usuario'])) {
                 <button type="button" id="add-faixa" class="btn btn-cinza mx-0 btn-sm mt-2 mb-0">Adicionar Faixa/Estrela</button>
             </div>
                 <div class="d-flex w-100 mt-4 mb-5">
-                    <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde">Salvar</button>
-                    <a href="cadastro_modalidades.php" class="btn text-uppercase w-50 voltar">Voltar</a>
+                    <button type="submit" class="btn text-uppercase w-50 ms-0 btn_verde" style="@media (max-width: 768px) {width:25%;}">Salvar</button>
+                    <a href="cadastro_modalidades.php" class="btn text-uppercase w-50 voltar" style="@media (max-width: 768px) {width:25%; margin:auto 0 !important;}">Voltar</a>
                     <?php if ($id_modalidade) { ?>
-                        <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" id="btn-excluir">Excluir</button>
+                        <button type="submit" name="excluir" value="1" class="btn text-uppercase w-50 me-0 excluir" id="btn-excluir" style="@media (max-width: 768px) {width:25%;}">Excluir</button>
                     <?php } ?>
                 </div>
             </div>

@@ -184,7 +184,7 @@ if (isset($_SESSION['usuario'])) {
                 <input type="text" class="input-field" name="nome" id="nome" autocomplete="off" maxlength="60" required>
                 <div id="nome-error" class="form-error"></div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="d-flex div-form mb-3">
                 <div class="me-2 w-50">
                     <label for="usuario" class="form-label">Usuário</label>
                     <input type="text" class="input-field" name="usuario" id="usuario" autocomplete="off" maxlength="30" required>
@@ -196,7 +196,7 @@ if (isset($_SESSION['usuario'])) {
                     <div id="senha-error" class="form-error"></div>
                 </div>
             </div>
-            <div class="d-flex flex-direction-row mb-3">
+            <div class="d-flex div-form mb-3">
                 <div class="me-2 w-50">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="input-field" name="email" id="email" autocomplete="off" maxlength="60" required>
@@ -208,7 +208,7 @@ if (isset($_SESSION['usuario'])) {
                     <div id="telefone-error" class="form-error"></div>
                 </div>
             </div>
-            <label for="emblemas" class="mt-4 form-label">Emblemas</label>
+            <label for="emblemas" class="mt-4 div-form form-label">Emblemas</label>
             <div class="d-flex w-100 mb-4">
                 <label class="form-check-label me-4">
                     <input type="checkbox" class="form-check-input" name="emb_ab" id="emb_ab">
@@ -230,7 +230,7 @@ if (isset($_SESSION['usuario'])) {
                     $nome_modalidade = htmlspecialchars($item['modalidade']['nome']);
                     $graduacoes = $item['graduacoes'];
                 ?>
-                <div class="d-flex flex-row w-100 justify-content-between my-2">
+                <div class="d-flex flex-row w-100 justify-content-between my-2 div-form-modalidades">
                     <div class="form-check">
                         <label class="form-check-label">
                             <input type="checkbox" class="form-check-input" name="modalidades[<?php echo $id_modalidade; ?>][selecionada]" value="1">
@@ -241,7 +241,7 @@ if (isset($_SESSION['usuario'])) {
                     <?php if (!empty($graduacoes)){ ?>
                     <div class="dropdown">
                         <input type="hidden" name="modalidades[<?php echo $id_modalidade; ?>][graduacao]" value="">
-                        <button class="dropdown-bs-toggle btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
+                        <button class="dropdown-bs-toggle btn btn-light dropdown-faixa" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:400px;">
                             Faixa/Estrela
                         </button>
                         <ul class="dropdown-menu">

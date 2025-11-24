@@ -593,3 +593,48 @@ p {
      gap: 1.5rem;
   }
 }
+
+/*FORMULÁRIOS - MOBILE*/
+.div-form {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+}
+
+.check-admin {
+  margin-top: 3rem;
+}
+
+.dropdown-faixa {
+  width: 400px;
+}
+
+@media (max-width: 768px) {
+  .div-form {
+    flex-direction: column;
+  }
+
+  .div-form div {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .check-admin {
+    margin-top: 1rem;
+  }
+
+  .dropdown-faixa {
+    width: 100% !important;
+    margin: auto;
+  }
+
+  .div-form-modalidades {
+    display: flex;
+    flex-direction: column !important;
+  }
+
+  .form-check {
+    align-self: auto;
+  }
+}
