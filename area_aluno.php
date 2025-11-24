@@ -159,11 +159,11 @@ if (isset($_SESSION['usuario'])) {
         <nav class="navbar navbar-expand-lg p-0">
                 <div class="container-fluid">
                 <div class="d-flex justify-content-between">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="index.php">
                         <img class="m-2" id="logo_cabecalho" src="img/logo.svg" alt="Logotipo">
                     </a>
                     <div class="flex-column">
-                        <a href="index.html">
+                        <a href="index.php">
                             <h2 class="text-uppercase ms-2"><b id="titulo_cabecalho">Shaolin Kung Fu Piracicaba</b></h2>
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -173,16 +173,25 @@ if (isset($_SESSION['usuario'])) {
                             <button class="btn-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="index.html">Home</a>
+                                    <a class="nav-link" href="index.php">Home</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-bs-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Modalidades
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" href="modalidades.php">Visão Geral</a></li>
+                                        <li><a class="dropdown-item" href="shaolin.php">Shaolin do Norte</a></li>
+                                        <li><a class="dropdown-item" href="kids.php">Shaolin Kids</a></li>
+                                        <li><a class="dropdown-item" href="sanda.php">Sanda</a></li>
+                                        <li><a class="dropdown-item" href="taichi.php">Tai Chi Chuan</a></li>
+                                    </ul>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="modalidades.html">Modalidades</a>
+                                    <a class="nav-link" href="sobre.php">Sobre</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="sobre.html">Sobre</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="premiacoes.html">Premiações</a>
+                                    <a class="nav-link" href="premiacoes.php">Premiações</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page"  href="area_aluno.php">Área do Aluno</a>
