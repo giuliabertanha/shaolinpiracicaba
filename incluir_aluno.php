@@ -30,7 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $emb_camp = isset($_POST['emb_camp']) ? 1 : 0;
     $modalidades_selecionadas = $_POST['modalidades'] ?? [];
 
-    if (empty($modalidades_selecionadas)) {
+    $alguma_modalidade_selecionada = false;
+    foreach ($modalidades_selecionadas as $dados) {
+        if (isset($dados['selecionada'])) {
+            $alguma_modalidade_selecionada = true;
+            break;
+        }
+    }
+
+    if (!$alguma_modalidade_selecionada) {
         echo "<script>alert('É obrigatório selecionar ao menos uma modalidade.'); window.history.back();</script>";
         exit;
     }

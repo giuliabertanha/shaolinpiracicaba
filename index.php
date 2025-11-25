@@ -42,7 +42,7 @@ $area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno
     <link rel="icon" href="img/icon.png" type="image/x-icon">
     <title>Shaolin Piracicaba | Home</title>
     <style>
-        /* 1. Em telas grandes, força 3 itens lado a lado e centralizados */
+        /*3 itens lado a lado */
         @media (min-width: 768px) {
             .carousel-inner .carousel-item-end,
             .carousel-inner .carousel-item-start, 
@@ -54,16 +54,15 @@ $area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno
             }
         }
         
-        /* 2. Em telas pequenas (celular), esconde os 2 cards clonados */
+        /* Celular - esconde os 2 cards */
         @media (max-width: 767.98px) {
             .carousel-inner .carousel-item > div:not(:first-child) {
                 display: none !important;
             }
         }
-        /* --- FIM DA CORREÇÃO DE RESPONSIVIDADE --- */
 
         .carousel-inner {
-            padding: 0 3rem; /* Espaço para as setas */
+            padding: 0 3rem;
         }
         .carousel-control-prev,
         .carousel-control-next {
@@ -154,50 +153,105 @@ $area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno
 
                     <h3 class="text-uppercase mt-5 mb-5 text-center">Modalidades</h3>
 
-                    <div id="modalidadeCarousel" class="carousel slide mb-5" data-bs-ride="carousel" data-bs-wrap="true">
+                    <div id="modalidadeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
                         <div class="carousel-inner">
-                            <div class="carousel-item">
-                                <div class="col-md-4 fade-in d-flex justify-content-center">
-                                    <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                        <div style="width: 150px; height: 150px; border: 2px solid #161616; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                             <img src="https://ik.imagekit.io/shaolin/img/shaolin_1.jpeg?updatedAt=1762439710926" alt="Modalidade Shaolin do Norte" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </div>
-                                        <h5 class="mt-2">Shaolin do Norte</h5>
-                                        <a href="shaolin.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Slide 1: Shaolin do Norte, Kids, Sanda -->
                             <div class="carousel-item active">
-                                <div class="col-md-4 fade-in d-flex justify-content-center"> 
-                                    <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                        <div style="width: 150px; height: 150px; border: 2px solid #161616; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                             <img src="https://ik.imagekit.io/shaolin/img/kids.jpeg?updatedAt=1762439710834" alt="Modalidade Kids" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </div>
-                                        <h5 class="mt-2">Kids</h5>
-                                        <a href="kids.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/shaolin_1.jpeg?updatedAt=1762439710926" alt="Modalidade Shaolin do Norte" style="width: 100%; height: 100%; object-fit: cover;">
                                     </div>
+                                    <h5 class="mt-2">Shaolin do Norte</h5>
+                                    <a href="shaolin.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/kids.jpeg?updatedAt=1762439710834" alt="Modalidade Kids" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Kids</h5>
+                                    <a href="kids.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/sanda.jpeg?updatedAt=1762439710935" alt="Modalidade Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Sanda</h5>
+                                    <a href="sanda.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
                                 </div>
                             </div>
+
+                            <!-- Slide 2: Tai Chi Chuan, Shaolin do Norte, Kids -->
                             <div class="carousel-item">
-                                <div class="col-md-4 fade-in d-flex justify-content-center">
-                                    <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                        <div style="width: 150px; height: 150px; border: 2px solid #161616; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                             <img src="https://ik.imagekit.io/shaolin/img/sanda.jpeg?updatedAt=1762439710935" alt="Modalidade Sanda" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </div>
-                                        <h5 class="mt-2">Sanda</h5>
-                                        <a href="sanda.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/tai.jpeg?updatedAt=1762482289684" alt="Modalidade Tai Chi Chuan" style="width: 100%; height: 100%; object-fit: cover;">
                                     </div>
+                                    <h5 class="mt-2">Tai Chi Chuan</h5>
+                                    <a href="taichi.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/shaolin_1.jpeg?updatedAt=1762439710926" alt="Modalidade Shaolin do Norte" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Shaolin do Norte</h5>
+                                    <a href="shaolin.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/kids.jpeg?updatedAt=1762439710834" alt="Modalidade Kids" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Kids</h5>
+                                    <a href="kids.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
                                 </div>
                             </div>
+
+                            <!-- Slide 3: Sanda, Tai Chi Chuan, Shaolin do Norte -->
                             <div class="carousel-item">
-                                <div class="col-md-4 fade-in d-flex justify-content-center">
-                                    <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px;">
-                                        <div style="width: 150px; height: 150px; border: 2px solid #161616; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
-                                             <img src="https://ik.imagekit.io/shaolin/img/tai.jpeg?updatedAt=1762482289684" alt="Modalidade Tai Chi Chuan" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </div>
-                                        <h5 class="mt-2">Tai Chi Chuan</h5>
-                                        <a href="taichi.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/sanda.jpeg?updatedAt=1762439710935" alt="Modalidade Sanda" style="width: 100%; height: 100%; object-fit: cover;">
                                     </div>
+                                    <h5 class="mt-2">Sanda</h5>
+                                    <a href="sanda.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/tai.jpeg?updatedAt=1762482289684" alt="Modalidade Tai Chi Chuan" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Tai Chi Chuan</h5>
+                                    <a href="taichi.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/shaolin_1.jpeg?updatedAt=1762439710926" alt="Modalidade Shaolin do Norte" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Shaolin do Norte</h5>
+                                    <a href="shaolin.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                            </div>
+
+                            <!-- Slide 4: Kids, Sanda, Tai Chi Chuan -->
+                            <div class="carousel-item">
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/kids.jpeg?updatedAt=1762439710834" alt="Modalidade Kids" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Kids</h5>
+                                    <a href="kids.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/sanda.jpeg?updatedAt=1762439710935" alt="Modalidade Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Sanda</h5>
+                                    <a href="sanda.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
+                                </div>
+                                <div class="text-center mx-2 p-3" style="width: 100%; max-width: 350px; display: inline-block;">
+                                    <div style="width: 150px; height: 150px; border-radius: 10px; padding: 0; overflow: hidden; display: inline-block; margin-bottom: 15px;">
+                                        <img src="https://ik.imagekit.io/shaolin/img/tai.jpeg?updatedAt=1762482289684" alt="Modalidade Tai Chi Chuan" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <h5 class="mt-2">Tai Chi Chuan</h5>
+                                    <a href="taichi.php" class="btn btn_verde btn-modalidade mx-auto">Saiba Mais</a>
                                 </div>
                             </div>
                         </div>
@@ -269,21 +323,5 @@ $area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno
     
     <script src="js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        let items = document.querySelectorAll('#modalidadeCarousel .carousel-item')
-
-        items.forEach((el) => {
-            const minPerSlide = 3
-            let next = el.nextElementSibling
-            for (var i=1; i<minPerSlide; i++) {
-                if (!next) {
-                    next = items[0]
-                }
-                let cloneChild = next.querySelector('div').cloneNode(true)
-                el.appendChild(cloneChild)
-                next = next.nextElementSibling
-            }
-        })
-    </script>
 </body>
 </html>

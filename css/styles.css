@@ -139,6 +139,12 @@ footer {
   border: none;
 }
 
+@media (max-width: 768px) {
+  #botoes .btn {
+    width: 70% !important;
+  }
+}
+
 /*Alinhamento checkbox*/
 .form-check {
     align-self: center;
@@ -594,6 +600,13 @@ p {
   }
 }
 
+/*ÁREA DO ALUNO*/
+.detalhes_modalidade {
+  text-align: left;
+  column-count: 2; 
+  column-gap: 40px;
+}
+
 /*FORMULÁRIOS - MOBILE*/
 .div-form {
   display: flex;
@@ -636,5 +649,9 @@ p {
 
   .form-check {
     align-self: auto;
+  }
+
+  .detalhes_modalidade {
+    column-count: 1 !important;
   }
 }

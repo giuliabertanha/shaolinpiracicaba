@@ -43,6 +43,74 @@ if (isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" href="img/icon.png" type="image/x-icon">
     <title>Shaolin Piracicaba | Área do Professor</title>
+    
+	<style>
+	/* RESPONSIVIDADE DA TABELA DE HORÁRIOS */
+	@media screen and (max-width: 768px) {
+    	/* Oculta a tabela original no mobile */
+    	.table-striped {
+        	display: none !important;
+    	}
+    
+    	/* Cria versão mobile com cards */
+    	.horarios-mobile {
+        	display: block !important;
+    	}
+    
+    	.horario-card {
+        	background-color: #FDFDFD;
+        	border-radius: 8px;
+        	padding: 15px;
+        	margin-bottom: 15px;
+        	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    	}
+    
+    	.horario-card h5 {
+        	color: #161616;
+        	font-weight: 600;
+        	margin-bottom: 10px;
+        	padding-bottom: 10px;
+        	border-bottom: 2px solid #BBCC87;
+    	}
+    
+    	.dia-aula {
+        	display: flex;
+        	justify-content: space-between;
+        	padding: 8px 0;
+        	border-bottom: 1px solid #F0F4F9;
+    	}
+    
+    	.dia-aula:last-child {
+        	border-bottom: none;
+    	}
+    
+    	.dia-aula .dia {
+        	font-weight: 500;
+    	}
+    
+    	.dia-aula .modalidade {
+        	color: #161616;
+       	 	text-align: right;
+    	}
+    
+    	.dia-aula .vazio {
+        	color: #999;
+       	 	font-style: italic;
+    	}
+    
+    	/* Ajusta o iframe do calendário no mobile */
+    	iframe {
+        	height: 400px !important;
+    	}
+	}
+
+	/* Esconde a versão mobile no desktop */
+	@media screen and (min-width: 769px) {
+    	.horarios-mobile {
+        	display: none !important;
+    	}
+	}
+	</style>
 </head>
 <body>
     <header>
@@ -121,41 +189,172 @@ if (isset($_SESSION['usuario'])) {
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row">08:00 - 09:00</th>
-                            <td>Modalidade A</td>
-                            <td>Modalidade A</td>
-                            <td>Modalidade A</td>
-                            <td>Modalidade C</td>
-                            <td>Modalidade C</td>
+                            <th scope="row">07:00 - 08:00</th>
+                            <td>Tai Chi Chuan</td>
+                            <td> </td>
+                            <td> </td>
+                            <td> </td>
+                            <td>Tai Chi Chuan</td>
                         </tr>
                         <tr>
-                            <th scope="row">14:00 - 15:00</th>
-                            <td>Modalidade B</td>
-                            <td>Modalidade B</td>
-                            <td>Modalidade A</td>
-                            <td>Modalidade A</td>
-                            <td>Modalidade A</td>
+                            <th scope="row">08:00 - 09:00</th>
+                            <td>Shaolin do Norte</td>
+                            <td>Treinamento Funcional</td>
+                            <td> </td>
+                            <td>Treinamento Funcional</td>
+                            <td>Shaolin do Norte</td>
+                        </tr>                        
+                        <tr>
+                            <th scope="row">17:00 - 18:00</th>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
                         </tr>
                         <tr>
                             <th scope="row">18:00 - 19:00</th>
-                            <td>Modalidade C</td>
-                            <td>Modalidade C</td>
-                            <td>Modalidade B</td>
-                            <td>Modalidade B</td>
-                            <td>Modalidade B</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td>Shaolin Kids</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td>Shaolin Kids</td>
+                            <td>Sanda Boxe Chinês</td>
                         </tr>
                         <tr>
                             <th scope="row">19:00 - 20:00</th>
-                            <td>Modalidade A</td>
-                            <td>Modalidade A</td>
-                            <td>Modalidade B</td>
-                            <td>Modalidade B</td>
-                            <td>Modalidade B</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td> </td>
                         </tr>
                     </tbody>
                 </table>
+                <!-- Versão Mobile dos Horários -->
+                <div class="horarios-mobile">
+                    <div class="horario-card">
+                        <h5>07:00 - 08:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Tai Chi Chuan</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Tai Chi Chuan</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>08:00 - 09:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Treinamento Funcional</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Treinamento Funcional</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>17:00 - 18:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>18:00 - 19:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Shaolin Kids</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Shaolin Kids</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>19:00 - 20:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <h4 class="text-uppercase mt-5 mb-3 text-center">Calendário</h4>
-                <iframe width="100%" class="mb-3 rounded-3" src="https://calendar.google.com/calendar/embed?height=500&wkst=1&ctz=America%2FSao_Paulo&showPrint=0&showTitle=0&showCalendars=0&showTabs=0&hl=pt_BR&src=OGMxNzk4NDhjYzNlN2YzMWE1ZjFhYzQxY2ZkOWM2ZjExOTA3ZTk4NDUxZTNlODM5NzUwZjY4YjM4MWNhOWYyZEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4uYnJhemlsaWFuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23ad1457&color=%230b8043" style="border-width:0" width="900" height="500" frameborder="0" scrolling="no"></iframe>
+                <iframe width="100%" class="mb-3 rounded-3" src="https://calendar.google.com/calendar/embed?			height=500&wkst=1&ctz=America%2FSao_Paulo&showPrint=0&showTitle=0&showCalendars=0&showTabs=0&hl=pt_BR&src=OGMxNzk4NDhjYzNlN2YzMWE1ZjFhYzQxY2ZkOWM2ZjExOTA3ZTk4NDUxZTNlODM5NzUwZjY4YjM4MWNhOWYyZEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4uYnJhemlsaWFuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23ad1457&color=%230b8043" 				style="border-width:0" width="900" height="500" frameborder="0" scrolling="no"></iframe>
             </div>
         </div>
     </main>

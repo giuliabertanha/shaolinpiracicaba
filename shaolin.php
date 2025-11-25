@@ -187,9 +187,10 @@ $area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno
                 <br>
                 <div class="text-center">
                     <h4 class="subtitulo"><b>Mais Informações</b></h4>
-                    <a href="https://wa.me/5519995194437?
-                        text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20Tai%20Chi%20Chuan%20e%20os%20valores%20das%20aulas!" 
-                        target="_blank" class="btn_verde whatsApp">
+                    <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20Shaolin%20do%20Norte%20e%20os%20valores%20das%20aulas%21" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        class="btn_verde whatsApp">
                         <i class="fa-brands fa-whatsapp fa-xl"></i>
                         Para valores ou mais informações, clique aqui!
                     </a>

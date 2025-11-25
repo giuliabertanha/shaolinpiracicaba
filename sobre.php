@@ -152,7 +152,7 @@ $area_usuario_link = ($tipo_usuario == 'P') ? 'area_professor.php' : 'area_aluno
             <div class="row justify-content-center">
                 <div class="col-lg-11 col-xl-10">
 
-                    <section class="sobre d-flex flex-column align-items-center">
+                    <section class="sobre d-flex flex-column align-items-center" style=" @media (max-width: 768px) {padding:0 !important;}">
                         <h2 class="text-uppercase mt-4 mb-3 text-center"><b>Sobre</b></h2>
                         
                         <div class="row align-items-center">

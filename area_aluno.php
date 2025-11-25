@@ -139,20 +139,152 @@ if (isset($_SESSION['usuario'])) {
     <link rel="icon" href="img/icon.png" type="image/x-icon">
     <title>Shaolin Piracicaba | Área do Aluno</title> 
     <style>
+    .container-aluno {
+        width: 70%;
+    }
+
+    @media (max-width: 767.98px) {
         .container-aluno {
-            width: 70%;
+            width: 100%;
         }
 
+        .loja-item {
+            margin-left: 1rem;
+        }
+    }
+    
+    #emblemas img {
+        width: 30% !important;
+        max-width: 150px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1rem;
+    }
+
+    .btn_verde {
+        width: auto;
+    }
+
+    #apostila .btn,
+    .d-flex.justify-content-center .btn {
+        width: auto !important;
+        max-width: fit-content;
+    }
+    
+    /* RESPONSIVIDADE DA TABELA DE HORÁRIOS */
+    @media screen and (max-width: 768px) {
+        .table-striped {
+            display: none !important;
+        }
+    
+        /* Cria versão mobile com cards */
+        .horarios-mobile {
+            display: block !important;
+        }
+    
+        .horario-card {
+            background-color: #FDFDFD;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .horario-card h5 {
+            color: #161616;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #BBCC87;
+        }
+    
+        .dia-aula {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #F0F4F9;
+        }
+    
+        .dia-aula:last-child {
+            border-bottom: none;
+        }
+    
+        .dia-aula .dia {
+            font-weight: 500;
+        }
+    
+        .dia-aula .modalidade {
+            color: #161616;
+            text-align: right;
+        }
+    
+        .dia-aula .vazio {
+            color: #999;
+            font-style: italic;
+        }
+    
+        #agenda iframe {
+            height: 400px !important;
+            width: 100% !important;
+        }
+        
+        #emblemas {
+            gap: 10px;
+        }
+        
+        #emblemas img {
+            width: 28% !important;
+        }
+    }
+
+    @media screen and (min-width: 769px) {
+        .horarios-mobile {
+            display: none !important;
+        }
+    }
+        
+        @media (min-width: 768px) {
+            .carousel-inner .carousel-item-end,
+            .carousel-inner .carousel-item-start, 
+            .carousel-inner .carousel-item-next,
+            .carousel-inner .carousel-item-prev,
+            .carousel-inner .carousel-item.active {
+                display: flex;
+                justify-content: center;
+            }
+        }
+        
+        /* Celular - esconde os 2 cards */
         @media (max-width: 767.98px) {
-            .container-aluno {
-                width: 100%;
-            }
-
-            .loja-item {
-                margin-left: 1rem;
+            .carousel-inner .carousel-item > div:not(:first-child) {
+                display: none !important;
             }
         }
-    </style>
+
+        .carousel-inner {
+            padding: 0 3rem;
+        }
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            opacity: 1;
+        }
+        .carousel-control-prev i,
+        .carousel-control-next i {
+            color: #161616 !important;
+        }
+        .btn-modalidade {
+            width: 50% !important;
+            padding: 0.375rem 0.75rem !important;
+            margin-top: 0.5rem !important;
+        }
+</style>
 </head>
 <body>
     <header>
@@ -217,7 +349,7 @@ if (isset($_SESSION['usuario'])) {
                 ?>
             </div>
             <div class="d-flex justify-content-center">
-                <a href="meu_cadastro.php" class="btn btn_verde w-100 mx-0">MEU CADASTRO</a>
+                <a href="meu_cadastro.php" class="btn btn_verde mx-0">MEU CADASTRO</a>
             </div>
             <section class="section d-flex aling-center justify-content-center mt-3" id="emblemas">
                 <?php
@@ -244,7 +376,7 @@ if (isset($_SESSION['usuario'])) {
                 <h2 class="text-center">GRADUAÇÃO POR FAIXA</h2>
                 <?php if ($result_matriculas->num_rows > 0) { ?>
                     <?php while($matricula = $result_matriculas->fetch_assoc()) { ?>
-                        <div class="detalhes_modalidade mt-5" style="text-align: left; column-count: 2; column-gap: 40px;">
+                        <div class="detalhes_modalidade mt-5">
                             <h4 class="text-uppercase"><?php echo htmlspecialchars($matricula['modalidade_nome']); ?></h4>
                             <?php
                                 if (htmlspecialchars($matricula['modalidade_nome']) == 'Shaolin do Norte') {
@@ -539,78 +671,487 @@ if (isset($_SESSION['usuario'])) {
             <section class="section mt-3" id="apostila">
                 <h2 class="text-center my-4">APOSTILA</h2>
                 <div class="d-flex justify-content-center">
-                    <a href="apostila.pdf" class="btn btn_verde w-100" download>
+                    <a href="apostila.pdf" class="btn btn_verde" download>
                         Clique aqui para fazer o download da apostila
                     </a>
                 </div>
             </section>
 
             <section class="section my-4" id="agenda">
-                <h2 class="text-center my-4">AGENDA</h2>
-                <div class="agenda-box">
-                    <strong>TABELA DE DIAS E HORÁRIOS DAS AULAS</strong>
-                </div>
-            </section>
-
-            <section class="section mt-5" id="loja">
-                <h2 class="text-center my-4">LOJA</h2>
-                <div class="loja-wrapper">
-                    <button class="arrow prev p-0" id="prev-btn">‹</button>
-                    <div class="loja-viewport my-5">
-                        <div class="loja-track">
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Bermuda." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Cal%C3%A7a_Shaolin.jpeg?updatedAt=1763143187811" alt="Calça" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Calça." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Camiseta_Shaolin.jpeg?updatedAt=1763143187797" alt="Camisa" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Camisa." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Faixa_Branca_Shaolin.jpeg?updatedAt=1763143187806" alt="Faixa" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Faixa." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-                
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Bermuda%20Shaolin." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Regata_Sanda.jpeg?updatedAt=1763143187740" alt="Regata" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20a%20Regata." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Shorts_Sanda.jpeg?updatedAt=1763143187932" alt="Shorts" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20o%20Shorts." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
-                            <div class="loja-item mb-3">
-                                <img src="https://ik.imagekit.io/shaolin/img/Leque.jpeg?updatedAt=1763143187678" alt="Leque" class="loja-item-img">
-                                <a href="https://wa.me/5519995194437?text=Olá!%20Gostaria%20de%20comprar%20o%20Leque." 
-                                    target="_blank" class="btn btn_verde">Comprar</a>
-                            </div>
-
+                 <h2 class="text-center my-4">HORÁRIOS</h2>
+                <table class="table table-striped table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th scope="col">Horário</th>
+                            <th scope="col">Segunda-feira</th>
+                            <th scope="col">Terça-feira</th>
+                            <th scope="col">Quarta-feira</th>
+                            <th scope="col">Quinta-feira</th>
+                            <th scope="col">Sexta-feira</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">07:00 - 08:00</th>
+                            <td>Tai Chi Chuan</td>
+                            <td> </td>
+                            <td> </td>
+                            <td> </td>
+                            <td>Tai Chi Chuan</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">08:00 - 09:00</th>
+                            <td>Shaolin do Norte</td>
+                            <td>Treinamento Funcional</td>
+                            <td> </td>
+                            <td>Treinamento Funcional</td>
+                            <td>Shaolin do Norte</td>
+                        </tr>                        
+                        <tr>
+                            <th scope="row">17:00 - 18:00</th>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Shaolin do Norte</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">18:00 - 19:00</th>
+                            <td>Sanda Boxe Chinês</td>
+                            <td>Shaolin Kids</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td>Shaolin Kids</td>
+                            <td>Sanda Boxe Chinês</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">19:00 - 20:00</th>
+                            <td>Shaolin do Norte</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td>Shaolin do Norte</td>
+                            <td>Sanda Boxe Chinês</td>
+                            <td> </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Versão Mobile dos Horários -->
+                <div class="horarios-mobile">
+                    <div class="horario-card">
+                        <h5>07:00 - 08:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Tai Chi Chuan</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Tai Chi Chuan</span>
                         </div>
                     </div>
-                    <button class="arrow next p-0" id="next-btn">›</button>
+
+                    <div class="horario-card">
+                        <h5>08:00 - 09:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Treinamento Funcional</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Treinamento Funcional</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>17:00 - 18:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>18:00 - 19:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Shaolin Kids</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Shaolin Kids</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                    </div>
+
+                    <div class="horario-card">
+                        <h5>19:00 - 20:00</h5>
+                        <div class="dia-aula">
+                            <span class="dia">Segunda</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Terça</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quarta</span>
+                            <span class="modalidade">Shaolin do Norte</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Quinta</span>
+                            <span class="modalidade">Sanda Boxe Chinês</span>
+                        </div>
+                        <div class="dia-aula">
+                            <span class="dia">Sexta</span>
+                            <span class="modalidade vazio">-</span>
+                        </div>
+                    </div>
                 </div>
-            </section>
+                
+                <h2 class="text-center my-4">CALENDÁRIO</h2>
+                <iframe width="100%" class="mb-3 rounded-3" src="https://calendar.google.com/calendar/embed?			height=500&wkst=1&ctz=America%2FSao_Paulo&showPrint=0&showTitle=0&showCalendars=0&showTabs=0&hl=pt_BR&src=OGMxNzk4NDhjYzNlN2YzMWE1ZjFhYzQxY2ZkOWM2ZjExOTA3ZTk4NDUxZTNlODM5NzUwZjY4YjM4MWNhOWYyZEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4uYnJhemlsaWFuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23ad1457&color=%230b8043" 				style="border-width:0" width="900" height="500" frameborder="0" scrolling="no"></iframe>
+                    
+                <h2 class="text-center my-4">LOJA</h2>
+                <div id="modalidadeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- Slide 1: Camiseta, Calça, Bermuda -->
+                        <div class="carousel-item active">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Camiseta_Shaolin.jpeg?updatedAt=1763143187797" alt="Camiseta Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Camiseta Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Camiseta%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Cal%C3%A7a_Shaolin.jpeg?updatedAt=1763143187811" alt="Calça Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Calça Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Cal%C3%A7a%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Bermuda Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Bermuda%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Faixa, Regata, Shorts -->
+                        <div class="carousel-item">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Faixa_Branca_Shaolin.jpeg?updatedAt=1763143187806" alt="Faixa Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Faixa Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Faixa%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Regata_Sanda.jpeg?updatedAt=1763143187740" alt="Regata Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Regata Sanda</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Regata%20Sanda*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Shorts_Sanda.jpeg?updatedAt=1763143187932" alt="Shorts Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Shorts Sanda</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20o%20*Shorts%20Sanda*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Leque, Camiseta, Calça -->
+                        <div class="carousel-item">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Leque.jpeg?updatedAt=1763143187678" alt="Leque Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Leque Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20o%20*Leque%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Camiseta_Shaolin.jpeg?updatedAt=1763143187797" alt="Camiseta Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Camiseta Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Camiseta%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Cal%C3%A7a_Shaolin.jpeg?updatedAt=1763143187811" alt="Calça Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Calça Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Cal%C3%A7a%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: Bermuda, Faixa, Regata -->
+                        <div class="carousel-item">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Bermuda Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Bermuda%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Faixa_Branca_Shaolin.jpeg?updatedAt=1763143187806" alt="Faixa Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Faixa Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Faixa%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Regata_Sanda.jpeg?updatedAt=1763143187740" alt="Regata Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Regata Sanda</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Regata%20Sanda*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5: Shorts, Leque, Camiseta -->
+                        <div class="carousel-item">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Shorts_Sanda.jpeg?updatedAt=1763143187932" alt="Shorts Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Shorts Sanda</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20o%20*Shorts%20Sanda*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Leque.jpeg?updatedAt=1763143187678" alt="Leque Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Leque Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20o%20*Leque%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Camiseta_Shaolin.jpeg?updatedAt=1763143187797" alt="Camiseta Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Camiseta Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Camiseta%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 6: Calça, Bermuda, Faixa -->
+                        <div class="carousel-item">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Cal%C3%A7a_Shaolin.jpeg?updatedAt=1763143187811" alt="Calça Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Calça Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Cal%C3%A7a%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Bermuda_Shaolin.jpeg?updatedAt=1763143188001" alt="Bermuda Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Bermuda Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Bermuda%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Faixa_Branca_Shaolin.jpeg?updatedAt=1763143187806" alt="Faixa Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Faixa Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Faixa%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Slide 7: Regata, Shorts, Leque -->
+                        <div class="carousel-item">
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Regata_Sanda.jpeg?updatedAt=1763143187740" alt="Regata Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Regata Sanda</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20a%20*Regata%20Sanda*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Shorts_Sanda.jpeg?updatedAt=1763143187932" alt="Shorts Sanda" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Shorts Sanda</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20o%20*Shorts%20Sanda*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                            <div class="item-card text-center p-3">
+                                <div style="width: 200px; height: 200px; border-radius: 10px; overflow: hidden; display: inline-block; margin: 0 auto 15px;">
+                                    <img src="https://ik.imagekit.io/shaolin/img/Leque.jpeg?updatedAt=1763143187678" alt="Leque Shaolin" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <h5>Leque Shaolin</h5>
+                                <a href="https://api.whatsapp.com/send?phone=5519995194437&text=Ol%C3%A1%21%20Tenho%20interesse%20em%20comprar%20o%20*Leque%20Shaolin*.%20Poderia%20me%20fornecer%20mais%20informa%C3%A7%C3%B5es%3F" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="btn btn_verde btn-modalidade">
+                                   Comprar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#modalidadeCarousel" data-bs-slide="prev">
+                        <i class="fa-solid fa-chevron-left fa-2x"></i>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#modalidadeCarousel" data-bs-slide="next">
+                        <i class="fa-solid fa-chevron-right fa-2x"></i>
+                        <span class="visually-hidden">Próximo</span>
+                    </button>
+                </div>
+
 </main>
 <footer class="d-flex justify-content-between align-items-center p-4" style="background-color: #f0f4f9;">
         <span>© 2025 Shaolin Kung Fu Piracicaba - Todos os direitos reservados.</span>
@@ -631,65 +1172,5 @@ if (isset($_SESSION['usuario'])) {
 
     <script src="js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const track = document.querySelector('.loja-track');
-            if (!track) return; 
-            const items = Array.from(track.children);
-            const nextButton = document.getElementById('next-btn');
-            const prevButton = document.getElementById('prev-btn');
-            const viewport = document.querySelector('.loja-viewport'); 
-            if (items.length === 0 || !nextButton || !prevButton || !viewport) {
-                return;
-            }
-
-            const itemWidth = items[0].getBoundingClientRect().width;
-            const gap = parseInt(getComputedStyle(track).gap) || 0;
-            const slideWidth = itemWidth + gap;
-            const itemsVisible = Math.floor(viewport.clientWidth / slideWidth);
-            const maxPosition = - (slideWidth * (items.length - itemsVisible));
-            let currentPosition = 0;
-
-            function moveToPosition(position) {
-                track.style.transform = `translateX(${position}px)`;
-                updateButtons();
-            }
-
-            function updateButtons() {
-                prevButton.style.display = (currentPosition === 0) ? 'none' : 'block';
-                const maxPosThreshold = maxPosition + (itemsVisible > 1 ? slideWidth / 2 : 0);
-                nextButton.style.display = (currentPosition <= maxPosThreshold) ? 'none' : 'block';
-            }
-
-            nextButton.addEventListener('click', () => {
-                currentPosition -= slideWidth;
-                if (currentPosition < maxPosition) {
-                    currentPosition = maxPosition;
-                }
-                moveToPosition(currentPosition);
-            });
-
-            prevButton.addEventListener('click', () => {
-                currentPosition += slideWidth;
-                if (currentPosition > 0) {
-                    currentPosition = 0;
-                }
-                moveToPosition(currentPosition);
-            });
-
-            updateButtons();
-            
-            window.addEventListener('resize', () => {
-                const newItemWidth = items[0].getBoundingClientRect().width;
-                const newGap = parseInt(getComputedStyle(track).gap) || 0;
-                const newSlideWidth = newItemWidth + newGap;
-                const newItemsVisible = Math.floor(viewport.clientWidth / newSlideWidth);
-                const newMaxPosition = - (newSlideWidth * (items.length - newItemsVisible));
-                
-                currentPosition = 0;
-                moveToPosition(currentPosition);
-            });
-        });
-    </script>
 </body>
 </html>

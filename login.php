@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 $servername = "localhost";
 $username = "root";
 $password = "root";
@@ -123,9 +122,6 @@ $conn->close();
                     <label for="senha" class="form-label">Senha</label>
                     <input type="password" id="senha" name="senha" class="input-field" minlength="6" maxlenght="30" required>
                 </div>
-                <div class="forgot-password">
-                    <a href="#" id="forgotPasswordLink">Esqueci minha senha</a>
-                </div>
                 <?php if (!empty($error_message)) { ?>
                     <div id="message" class="message error" style="display: block;"><?php echo $error_message; ?></div>
                 <?php } ?>
@@ -134,19 +130,6 @@ $conn->close();
                 <?php } ?>
                 <button type="submit" name="login" class="btn text-uppercase w-100 ms-0 mt-3 mb-3 btn_verde">Entrar</button>
             </form>
-
-            <!-- Formulário de Esqueci a Senha -->
-            <form id="forgotPasswordForm" action="login.php" method="POST" style="display: none;">
-                <div class="mb-3">
-                    <label for="usuario_email" class="form-label">Usuário ou E-mail</label>
-                    <input type="text" class="input-field" name="usuario_email" id="usuario_email" autocomplete="off" required>
-                </div>
-                <button type="submit" name="forgot_password" class="btn text-uppercase w-100 ms-0 mt-3 mb-3 btn_verde">Enviar</button>
-                <div class="text-center">
-                    <a href="#" id="backToLoginLink">Voltar para o Login</a>
-                </div>
-            </form>
-
         </div>
     </main>
     <footer class="d-flex justify-content-between align-items-center p-4"> <!--Fixar rodapé-->
@@ -158,24 +141,5 @@ $conn->close();
         </div>
     </footer>
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('forgotPasswordForm').style.display = 'block';
-            document.querySelector('.login-container h2').textContent = 'Recuperar Senha';
-            const message = document.getElementById('message');
-            if(message) message.style.display = 'none';
-        });
-
-        document.getElementById('backToLoginLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('forgotPasswordForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-            document.querySelector('.login-container h2').textContent = 'Login';
-            const message = document.getElementById('message');
-            if(message) message.style.display = 'none';
-        });
-    </script>
 </body>
 </html>
