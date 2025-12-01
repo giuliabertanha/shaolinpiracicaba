@@ -22,6 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
     $faixas = $_POST['faixas'] ?? [];
 
+    $faixas_validas = array_filter(array_map('trim', $faixas));
+
+    if (empty($faixas_validas)) {
+        echo "<script>alert('É obrigatório adicionar pelo menos uma Faixa/Estrela para a modalidade.'); window.history.back();</script>";
+        exit;
+    }
+
+
     $stmt_check = $conn->prepare("SELECT id FROM modalidades WHERE nome = ?");
     $stmt_check->bind_param("s", $nome);
     $stmt_check->execute();
