@@ -342,10 +342,10 @@ if (isset($_SESSION['usuario'])) {
     <main class="d-flex flex-column align-items-center"> 
         <div class="m-auto container-aluno">
             <h2 class="text-uppercase mb-5 text-center"><b>Área do Aluno</b></h2>
-            <div class="student-header my-3">
+             <div class="student-header my-3">
                 <span><?php echo htmlspecialchars($user_nome); ?></span>
                 <?php
-                    echo '<span>' . htmlspecialchars($result_modalidades->fetch_assoc()["Modalidade"]) . '</span>';
+                    echo "<span class='ms-3'>" . htmlspecialchars($result_modalidades->fetch_assoc()["Modalidade"]) . '</span>';
                 ?>
             </div>
             <div class="d-flex justify-content-center">

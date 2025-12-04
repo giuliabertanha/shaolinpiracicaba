@@ -354,6 +354,18 @@ if (isset($_SESSION['usuario'])) {
 
                     caixaSelecao.addEventListener('change', atualizarEstado);
                     
+                    const dropdownItems = linha.querySelectorAll('.dropdown-item');
+                    dropdownItems.forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const nomeGraduacao = this.textContent;
+                            if (botaoDropdown && inputOculto) {
+                                botaoDropdown.textContent = nomeGraduacao;
+                                inputOculto.value = nomeGraduacao;
+                            }
+                        });
+                    });
+
                     atualizarEstado();
                 }
             });
