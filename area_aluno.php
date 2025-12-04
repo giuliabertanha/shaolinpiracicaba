@@ -671,7 +671,7 @@ if (isset($_SESSION['usuario'])) {
             <section class="section mt-3" id="apostila">
                 <h2 class="text-center my-4">APOSTILA</h2>
                 <div class="d-flex justify-content-center">
-                    <a href="apostila.pdf" class="btn btn_verde" download>
+                    <a href="pdf/apostila.pdf" class="btn btn_verde" download>
                         Clique aqui para fazer o download da apostila
                     </a>
                 </div>

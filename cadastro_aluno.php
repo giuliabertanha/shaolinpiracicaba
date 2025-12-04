@@ -65,8 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ?, emb_ab = ?, emb_5anos = ?, emb_camp = ? WHERE id = ?");
                 $stmt_update_user->bind_param("sssssiiii", $nome, $usuario, $senha_hash, $telefone, $email, $emb_ab, $emb_5anos, $emb_camp, $id_aluno_update);
             } else {
-                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, senha = ?, telefone = ?, email = ?, emb_ab = ?, emb_5anos = ?, emb_camp = ? WHERE id = ?");
-                $stmt_update_user->bind_param("sssssiiii", $nome, $usuario, $senha_hash, $telefone, $email, $emb_ab, $emb_5anos, $emb_camp, $id_aluno_update);
+                $stmt_update_user = $conn->prepare("UPDATE usuarios SET nome = ?, usuario = ?, telefone = ?, email = ?, emb_ab = ?, emb_5anos = ?, emb_camp = ? WHERE id = ?");
+                $stmt_update_user->bind_param("ssssiiii", $nome, $usuario, $telefone, $email, $emb_ab, $emb_5anos, $emb_camp, $id_aluno_update);
             }
             $stmt_update_user->execute();
             $stmt_update_user->close();
